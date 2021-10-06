@@ -1,10 +1,11 @@
 #   SCRIPT PARA CÁLCULO DE FRECUENCIAS DE CONSERVACIÓN DE CODONES Y PARES DE CODONES
 #   Autor: Facundo Martínez
 #   Año 2021
+import numpy as np
 
 #   Lectura de archivos .afa y almacenamiento en una lista
 import os
-directorio = '/home/usuario/Escritorio/Tesis/droso12spp/'
+directorio = 'C:\\Users\\Usuario\\Desktop\\Tesis\\droso12spp'
 contenido = os.listdir(directorio)
 
 secuencias = []
@@ -15,9 +16,7 @@ for fichero in contenido:
 #   Array(arrX, arrY) donde arrX=especies, arrY=secuencias
 #   El booleano "auxvar" hace las veces de switch para hacer un sorting de las líneas
 
-textlist = []
-arrX = []
-arrY = []
+textlist, arrX, arrY = [], [], []
 auxvar = True
 
 for i in range(len(secuencias)):
@@ -35,24 +34,26 @@ for i in range(len(secuencias)):
             arrY.append(k)
             auxvar = True
 
-array = []
+arrXY = []
 for i in range(len(arrX)):
-    array.append([arrX[i], arrY[i]])
+    arrXY.append([arrX[i], arrY[i]])
 
-"""
+
 #   Separación en codones y dicodones
 #   la lista de dicodones tiene en cuenta la superposición de codones
 #   n = 3 corresponde al tamaño del salto a la hora de definir la nueva secuencia a añadir a las listas
-codones = []
-bicodones = []
+codones, bicodones = [], np.array([])
 n = 3
 
-for _,k in array:
+for _,k in arrXY:
     for j in k:   
         codon = [j[i:i+n] for i in range(0, len(j), n)]
         dicodon = [j[i:i+2*n] for i in range(0, len(j), n)]
         codones.append(codon)
-        bicodones.append(dicodon)   #   Problema a resolver: queda un codon al final de la lista...
+        np.append(bicodones, dicodon)   #   Problema a resolver: queda un codon al final de la lista...
+
+print(codones[:][0])
+
 """
 #   Listas de codones y pares de codones
 #   Generación de lista de pares de codones mediante un bucle
@@ -68,53 +69,60 @@ for i in cod1:
 
 #   Cálculo de las frecuencias de conservación:
 
-"""
-his3 = []
-his6 = []
+largo3, largo6 = len(codones), len(bicodones)
+historial3, historial6 = np.zeros(largo3), np.zeros(largo6)
+his3, his6 = np.zeros(largo3), np.zeros(largo6)
+his3c, his6c = np.zeros(largo3), np.zeros(largo6)
 
-for i in cod1:
-    contador = 0
-    for j in codones:
-        for k in j:
-            if k == i:
-                contador += 1
-    his3.append(contador)
+cod3_ref = codones[0]
+cod6_ref = bicodones[0]
 
-for i in codcod:
-    contador = 0
-    for j in bicodones:
-        for k in j:
-            if k == i:
-                contador += 1
-    his6.append(contador)
+#   Codones:
+contador = 0
+for i in cod3_ref:
+    slicer = codones[:,contador]
+    for j in slicer:
+        if j == i:
+            his3[contador] += 1
+    contador += 1
+
+#   Bicodones
+contador = 0
+for i in cod6_ref:
+    slicer = bicodones[:,contador]
+    for j in slicer:
+        if j == i:
+            historial6[contador] += 1
+
+#   Frec. de conservación:
+
+contador1, contador2 = 0, 0
+aux1, aux2 = len(historial3[:,contador1]), len(historial6[:,contador2])
+
+for x in historial3:
+	if x/aux1 > 0.9:
+		his3c[contador1] = x/aux1
+	contador1 += 1
+
+for x in historial6:
+    if x/aux2 > 0.9:
+        his6c[contador2] = x/aux2
+    contador2 += 1
+
+#   Cálculo de his3/his6
+contador = 0
+for cod in cod1:
+    for i in cod3_ref:
+        if cod == i:
+            his3[contador] += 1
+    contador += 1
+
+contador = 0
+for bicod in codcod:
+    for i in cod6_ref:
+        if bicod == i:
+            his6[contador] += 1
+    contador += 1
 
 print(his3)
 """
-codones = []
-contador = 0
-
-for i in arrX:
-    if arrX[contador] == '>Dmel':
-        print(arrX[contador])
-        contador += 1
-        
-#   Para iterar respecto al primer item de codones/bicodones puedo usar un bucle "while"
-#   for i in codones: for j in i: while i "menor que cierto valor"
-#   me servirá un bucle while?
-
-
-"""
-########### CÓDIGO ADICIONAL ###########
-
-#   Visualizar longitud de codones y bicodones
-element = 0
-contador = 0
-for i in codones/bicodones:
-    largo = len(codones/bicodones[element])
-    element += 1
-    contador += largo
-print(contador)
-
-#   Ver tamaño de objeto en memoria:
-from sys import getsizeof
-print(getsizeof(objeto))"""
