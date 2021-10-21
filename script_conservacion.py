@@ -5,7 +5,7 @@ import numpy as np
 
 #   Lectura de archivos .afa y almacenamiento en una lista
 import os
-directorio = '/home/usuario/Documentos/Tesis'
+directorio = 'directorio-donde-aloja-las-secuencias'
 contenido = os.listdir(directorio)
 
 secuencias = []
