@@ -1,6 +1,3 @@
-#   SCRIPT PARA CÁLCULO DE FRECUENCIAS DE CONSERVACIÓN DE CODONES Y PARES DE CODONES
-#   Autor: Facundo Martínez
-#   Año 2021
 import numpy as np
 
 #   Lectura de archivos .afa y almacenamiento en una lista
