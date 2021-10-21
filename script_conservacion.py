@@ -5,7 +5,7 @@ import numpy as np
 
 #   Lectura de archivos .afa y almacenamiento en una lista
 import os
-directorio = 'C:\\Users\\Usuario\\Desktop\\Tesis\\droso12spp'
+directorio = '/home/usuario/Documentos/Tesis'
 contenido = os.listdir(directorio)
 
 secuencias = []
@@ -48,13 +48,12 @@ n = 3
 for _,k in arrXY:
     for j in k:   
         codon = [j[i:i+n] for i in range(0, len(j), n)]
-        dicodon = [j[i:i+2*n] for i in range(0, len(j), n)]
+        bicodon = [j[i:i+2*n] for i in range(0, len(j), n)]
         codones.append(codon)
-        np.append(bicodones, dicodon)   #   Problema a resolver: queda un codon al final de la lista...
+        bicodones.append(bicodon)   #   Problema a resolver: queda un codon al final de la lista...
 
-print(codones[:][0])
+codones, bicodones = np.asarray(codones), np.asarray(bicodones)
 
-"""
 #   Listas de codones y pares de codones
 #   Generación de lista de pares de codones mediante un bucle
 
@@ -125,4 +124,3 @@ for bicod in codcod:
     contador += 1
 
 print(his3)
-"""
