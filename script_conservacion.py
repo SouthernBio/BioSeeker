@@ -98,7 +98,7 @@ for i in cod6_ref:
 
 #   Frec. de conservación:
 #   Este bloque cuenta cuántas veces el codón (o bicodón) fue conservado en dicha posición
-#   
+#   Si la frecuencia de conservación es mayor al 90%, entonces suma 1 en la posición de his3c
 contador1, contador2 = 0, 0
 aux1, aux2 = len(historial3[:,contador1]), len(historial6[:,contador2])
 
@@ -112,10 +112,8 @@ for x in historial6:
         his6c[contador2] = x/aux2
     contador2 += 1
 
-
-
-
 #   Cálculo de his3/his6
+#   Este bloque cuenta cuántas veces un cierto codón (o bicodón) apareció en la secuencia de referencia
 contador = 0
 for cod in cod1:
     for i in cod3_ref:
