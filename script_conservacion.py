@@ -74,24 +74,31 @@ cod3_ref = codones[0]
 cod6_ref = bicodones[0]
 
 #   Codones:
+#   Acá se cuenta cuántas veces aparece el codón de referencia en dicha posición
+#   historial3 almacena la cantidad de veces que aparece ese codón
 contador = 0
 for i in cod3_ref:
     slicer = codones[:,contador]
     for j in slicer:
         if j == i:
-            his3[contador] += 1
+            historial3[contador] += 1
     contador += 1
 
 #   Bicodones
+#   Comportamiento similar al bloque anterior, pero para bicodones
 contador = 0
 for i in cod6_ref:
     slicer = bicodones[:,contador]
     for j in slicer:
         if j == i:
             historial6[contador] += 1
+    contador += 1
+
+# Hasta acá el script funciona bien...
 
 #   Frec. de conservación:
-
+#   Este bloque cuenta cuántas veces el codón (o bicodón) fue conservado en dicha posición
+#   
 contador1, contador2 = 0, 0
 aux1, aux2 = len(historial3[:,contador1]), len(historial6[:,contador2])
 
@@ -104,20 +111,3 @@ for x in historial6:
     if x/aux2 > 0.9:
         his6c[contador2] = x/aux2
     contador2 += 1
-
-#   Cálculo de his3/his6
-contador = 0
-for cod in cod1:
-    for i in cod3_ref:
-        if cod == i:
-            his3[contador] += 1
-    contador += 1
-
-contador = 0
-for bicod in codcod:
-    for i in cod6_ref:
-        if bicod == i:
-            his6[contador] += 1
-    contador += 1
-
-print(his3)
