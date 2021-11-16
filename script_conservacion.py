@@ -111,3 +111,22 @@ for x in historial6:
     if x/aux2 > 0.9:
         his6c[contador2] = x/aux2
     contador2 += 1
+
+
+
+
+#   Cálculo de his3/his6
+contador = 0
+for cod in cod1:
+    for i in cod3_ref:
+        if cod == i:
+            his3[contador] += 1
+    contador += 1
+
+contador = 0
+for bicod in codcod:
+    for i in cod6_ref:
+        if bicod == i:
+            his6[contador] += 1
+    contador += 1
+
