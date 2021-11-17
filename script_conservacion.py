@@ -70,7 +70,7 @@ cod6_ref = bicodones[0]
 
 largo3, largo6 = len(cod3_ref), len(cod6_ref)
 historial3, historial6 = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
-his3, his6 = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
+his3, his6 = np.zeros(61, dtype="i"), np.zeros(3721, dtype="i")
 his3c, his6c = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
 
 #   Codones:
@@ -81,7 +81,7 @@ for i in cod3_ref:
     slicer = codones[:,contador]
     for j in slicer:
         if j == i:
-            historial3[contador] += 1 #IndexError: index 12 is out of bounds for axis 0 with size 12
+            historial3[contador] += 1 
     contador += 1
 
 #   Bicodones
@@ -98,7 +98,7 @@ for i in cod6_ref:
 #   Este bloque cuenta cuántas veces el codón (o bicodón) fue conservado en dicha posición
 #   Si la frecuencia de conservación es mayor al 90%, entonces suma 1 en la posición de his3c
 contador1, contador2 = 0, 0
-aux1, aux2 = len(historial3), len(historial6)
+aux1, aux2 = len(codones[:,0]), len(bicodones[:,0])
 
 for x in historial3:
 	if x/aux1 > 0.9:
@@ -110,8 +110,10 @@ for x in historial6:
         his6c[contador2] += 1
     contador2 += 1
 
-print("Acá van historial3 e historial6:")
+print("Acá va historial3:")
 print(historial3)
+
+print("Acá va historial6: ")
 print(historial6)
 
 print("Acá va his3c:")
