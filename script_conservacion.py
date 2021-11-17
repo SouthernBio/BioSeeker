@@ -2,7 +2,7 @@ import numpy as np
 
 #   Lectura de archivos .afa y almacenamiento en una lista
 import os
-directorio = 'directorio-donde-aloja-las-secuencias'
+directorio = '/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros'
 contenido = os.listdir(directorio)
 
 secuencias = []
@@ -39,7 +39,7 @@ for i in range(len(arrX)):
 #   Separación en codones y dicodones
 #   la lista de dicodones tiene en cuenta la superposición de codones
 #   n = 3 corresponde al tamaño del salto a la hora de definir la nueva secuencia a añadir a las listas
-codones, bicodones = [], np.array([])
+codones, bicodones = [], []
 n = 3
 
 for _,k in arrXY:
@@ -65,13 +65,13 @@ for i in cod1:
 
 #   Cálculo de las frecuencias de conservación:
 
-largo3, largo6 = len(codones), len(bicodones)
-historial3, historial6 = np.zeros(largo3), np.zeros(largo6)
-his3, his6 = np.zeros(largo3), np.zeros(largo6)
-his3c, his6c = np.zeros(largo3), np.zeros(largo6)
-
 cod3_ref = codones[0]
 cod6_ref = bicodones[0]
+
+largo3, largo6 = len(cod3_ref), len(cod6_ref)
+historial3, historial6 = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
+his3, his6 = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
+his3c, his6c = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
 
 #   Codones:
 #   Acá se cuenta cuántas veces aparece el codón de referencia en dicha posición
@@ -81,7 +81,7 @@ for i in cod3_ref:
     slicer = codones[:,contador]
     for j in slicer:
         if j == i:
-            historial3[contador] += 1
+            historial3[contador] += 1 #IndexError: index 12 is out of bounds for axis 0 with size 12
     contador += 1
 
 #   Bicodones
@@ -94,13 +94,11 @@ for i in cod6_ref:
             historial6[contador] += 1
     contador += 1
 
-# Hasta acá el script funciona bien...
-
 #   Frec. de conservación:
 #   Este bloque cuenta cuántas veces el codón (o bicodón) fue conservado en dicha posición
 #   Si la frecuencia de conservación es mayor al 90%, entonces suma 1 en la posición de his3c
 contador1, contador2 = 0, 0
-aux1, aux2 = len(historial3[:,0]), len(historial6[:,0])
+aux1, aux2 = len(historial3), len(historial6)
 
 for x in historial3:
 	if x/aux1 > 0.9:
@@ -112,6 +110,13 @@ for x in historial6:
         his6c[contador2] += 1
     contador2 += 1
 
+print("Acá van historial3 e historial6:")
+print(historial3)
+print(historial6)
+
+print("Acá va his3c:")
+print(his3c)
+
 #   Cálculo de his3/his6
 #   Este bloque cuenta cuántas veces un cierto codón (o bicodón) apareció en la secuencia de referencia
 contador = 0
@@ -121,10 +126,14 @@ for cod in cod1:
             his3[contador] += 1
     contador += 1
 
+print("Acá va his3:")
+print(his3)
+
+"""
 contador = 0
 for bicod in codcod:
     for i in cod6_ref:
         if bicod == i:
-            his6[contador] += 1
+            his6[contador] += 1 #IndexError: index 399 is out of bounds for axis 0 with size 396
     contador += 1
-
+"""
