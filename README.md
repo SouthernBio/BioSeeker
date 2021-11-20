@@ -13,7 +13,7 @@ Para ejecutar este script debe instalar el lenguaje Python y el gestor de paquet
 $ sudo apt-get update
 $ sudo apt-get install python3 python3-pip
 ```
-Una vez instalados Python y su gestor de paquetes, puede proceder a installar `numpy` mediante el siguiente comando:
+Una vez instalados Python y su gestor de paquetes, puede proceder a installar `numpy` y `pandas` mediante el siguiente comando: 
 ```bash
 $ pip3 install numpy
 $ pip3 install pandas
