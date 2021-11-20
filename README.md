@@ -1,12 +1,10 @@
 # Calculadora de tasa de conservación de codones
 
-***+++ TRABAJO EN PROGRESO +++***
-
 Este script facilita el cálculo de la tasa de conservación de codones. 
 
 ### 1. ¿Cómo funciona?
 
-El script toma como input un archivo que contiene genes homólogos previamente alineados, en formato FASTA. Luego de un procesamiento mínimo del archivo para extraer los datos, se crea una matriz mediante la librería `numpy`, y así poder iterar sobre porciones de la misma.
+El script toma como input un archivo que contiene genes homólogos previamente alineados, en formato FASTA. Luego de un procesamiento mínimo del archivo para extraer los datos, se crea una matriz mediante la librería `numpy`, y así poder iterar sobre porciones de la misma. La información obtenida se almacena en un archivo CSV, el cual se crea utilizando la librería `pandas`
 
 ### 2. Dependencias
 
@@ -18,6 +16,7 @@ $ sudo apt-get install python3 python3-pip
 Una vez instalados Python y su gestor de paquetes, puede proceder a installar `numpy` mediante el siguiente comando:
 ```bash
 $ pip3 install numpy
+$ pip3 install pandas
 ```
 
 ### 3. ¿Cómo se usa?
