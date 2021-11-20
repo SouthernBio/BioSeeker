@@ -126,12 +126,7 @@ for bicodon in codcod:
     for i in matriz_conservacion_cod6ref:
         if (i[1] != '0') and (i[0] == bicodon):
             conserva6[contador] += 1
-    contador += 1
-
-print("Acá va conserva3: ")
-print(conserva3)        
-print("Acá va conserva6: ")
-print(conserva6)       
+    contador += 1    
 
 #   Cálculo de his3/his6
 #   Este bloque cuenta cuántas veces un cierto codón (o bicodón) apareció en la secuencia de referencia
@@ -142,18 +137,12 @@ for cod in cod1:
             his3[contador] += 1
     contador += 1
 
-print("Acá va his3:")
-print(his3)
-
 contador = 0
 for bicod in codcod:
     for i in cod6_ref:
         if bicod == i:
             his6[contador] += 1
     contador += 1
-
-print("Acá va his6: ")
-print(his6)
 
 array_codones = np.column_stack((cod1, his3, conserva3))
 array_bicodones = np.column_stack((codcod, his6, conserva6))
