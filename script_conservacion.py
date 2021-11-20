@@ -72,6 +72,7 @@ largo3, largo6 = len(cod3_ref), len(cod6_ref)
 historial3, historial6 = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
 his3, his6 = np.zeros(61, dtype="i"), np.zeros(3721, dtype="i")
 his3c, his6c = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
+conserva3, conserva6 = np.zeros(61, dtype="i"), np.zeros(3721, dtype="i")
 
 #   Codones:
 #   Acá se cuenta cuántas veces aparece el codón de referencia en dicha posición
@@ -96,7 +97,7 @@ for i in cod6_ref:
 
 #   Frec. de conservación:
 #   Este bloque cuenta cuántas veces el codón (o bicodón) fue conservado en dicha posición
-#   Si la frecuencia de conservación es mayor al 90%, entonces suma 1 en la posición de his3c
+#   Si la frecuencia de conservación es mayor al 90%, entonces suma 1 en la posición del codon en la secuencia de referencia.
 contador1, contador2 = 0, 0
 aux1, aux2 = len(codones[:,0]), len(bicodones[:,0])
 
@@ -110,14 +111,27 @@ for x in historial6:
         his6c[contador2] += 1
     contador2 += 1
 
-print("Acá va historial3:")
-print(historial3)
+matriz_conservacion_cod3ref = np.column_stack((np.asarray(cod3_ref), np.asarray(his3c)))
+matriz_conservacion_cod6ref = np.column_stack((np.asarray(cod6_ref), np.asarray(his6c)))
 
-print("Acá va historial6: ")
-print(historial6)
+contador = 0
+for codon in cod1:
+	for i in matriz_conservacion_cod3ref:
+		if (i[1] != '0') and (i[0] == codon):
+			conserva3[contador] += 1
+	contador += 1
 
-print("Acá va his3c:")
-print(his3c)
+contador = 0
+for bicodon in codcod:
+    for i in matriz_conservacion_cod6ref:
+        if (i[1] != '0') and (i[0] == bicodon):
+            conserva6[contador] += 1
+    contador += 1
+
+print("Acá va conserva3: ")
+print(conserva3)        
+print("Acá va conserva6: ")
+print(conserva6)       
 
 #   Cálculo de his3/his6
 #   Este bloque cuenta cuántas veces un cierto codón (o bicodón) apareció en la secuencia de referencia
@@ -131,11 +145,20 @@ for cod in cod1:
 print("Acá va his3:")
 print(his3)
 
-"""
 contador = 0
 for bicod in codcod:
     for i in cod6_ref:
         if bicod == i:
-            his6[contador] += 1 #IndexError: index 399 is out of bounds for axis 0 with size 396
+            his6[contador] += 1
     contador += 1
-"""
+
+print("Acá va his6: ")
+print(his6)
+
+array_codones = np.column_stack((cod1, his3, conserva3))
+array_bicodones = np.column_stack((codcod, his6, conserva6))
+
+import pandas as pd
+df_codones, df_bicodones = pd.DataFrame(array_codones), pd.DataFrame(array_bicodones)
+df_codones.to_csv("historial_codones.csv")
+df_bicodones.to_csv("historial_bicodones.csv")
