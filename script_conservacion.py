@@ -2,7 +2,7 @@ import numpy as np
 
 #   Lectura de archivos .afa y almacenamiento en una lista
 import os
-directorio = '/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros'
+directorio = 'DIRECTORIO-DE-TRABAJO'
 contenido = os.listdir(directorio)
 
 secuencias = []
