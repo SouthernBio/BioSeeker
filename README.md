@@ -1,6 +1,6 @@
-# Calculadora de tasa de conservación de codones
+# Calculadora de tasa de conservación de codones y pares de codones
 
-Este script facilita el cálculo de la tasa de conservación de codones. 
+Este script facilita el cálculo de la tasa de conservación de codones y pares de codones. 
 
 ### 1. ¿Cómo funciona?
 
