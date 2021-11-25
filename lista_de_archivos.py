@@ -1,3 +1,4 @@
+#   1   -   Función de lectura y almacenamiento de archivos .afa
 def lista_de_archivos(directorio_de_trabajo):
     import os
     directorio = directorio_de_trabajo
@@ -10,6 +11,7 @@ def lista_de_archivos(directorio_de_trabajo):
 
     return secuencias
 
+#   2   -   Función de extracción de secuencias a partir de archivo .afa
 def extraer_secuencias(archivo):
     import os
     textlist, arrX, arrY = [], [], []
@@ -35,6 +37,8 @@ def extraer_secuencias(archivo):
     
     return arrXY
 
+#   3   -   Función de cálculo de tasas de conservación de codones y bicodones
+#           a partir de un array de secuencias
 def calculos_de_conservacion(array_de_secuencias, indice):
     import numpy as np, pandas as pd
     codones, bicodones = [], []
@@ -134,9 +138,10 @@ def calculos_de_conservacion(array_de_secuencias, indice):
 
     return df_codones.to_csv("historial_codones" + "_" + indice + ".csv"), df_bicodones.to_csv("historial_bicodones" + "_" + indice + ".csv")
 
-
+#   4   -   Generación de la lista de archivos
 lista = lista_de_archivos("C:\\Users\\Usuario\\Desktop\\Tesis\\droso12spp\\archivos")
 
+#   5   -   Creación de los dataframes
 indice = 0
 for archivo in lista:
     array_de_secuencias = extraer_secuencias(archivo)
