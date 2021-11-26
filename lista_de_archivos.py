@@ -169,13 +169,16 @@ def calculos_de_conservacion(array_de_secuencias, indice):
     print("El ensamblaje ha sido exitoso. Creando dataframes...")
 
     df_codones, df_bicodones = pd.DataFrame(array_codones), pd.DataFrame(array_bicodones)
+    dataframe_cod3 = df_codones.to_csv("historial_codones" + "_" + indice + ".csv"), 
+    dataframe_cod6 = df_bicodones.to_csv("historial_bicodones" + "_" + indice + ".csv")
 
-    return df_codones.to_csv("historial_codones" + "_" + indice + ".csv"), df_bicodones.to_csv("historial_bicodones" + "_" + indice + ".csv")
+    return dataframe_cod3, dataframe_cod6
 
 #   4   -   Generación de la lista de archivos
 lista = lista_de_archivos("C:\\Users\\Usuario\\Desktop\\Tesis\\droso12spp\\archivos")
 
 #   5   -   Creación de los dataframes
+lista_de_dataframes_cod3 , lista_de_dataframes_cod6 = [], []
 indice = 0
 for archivo in lista:
     array_de_secuencias = extraer_secuencias(archivo)
