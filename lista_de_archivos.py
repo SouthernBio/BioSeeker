@@ -169,19 +169,36 @@ def calculos_de_conservacion(array_de_secuencias, indice):
     print("El ensamblaje ha sido exitoso. Creando dataframes...")
 
     df_codones, df_bicodones = pd.DataFrame(array_codones), pd.DataFrame(array_bicodones)
-    dataframe_cod3 = df_codones.to_csv("historial_codones" + "_" + indice + ".csv"), 
-    dataframe_cod6 = df_bicodones.to_csv("historial_bicodones" + "_" + indice + ".csv")
+    dataframe_cod3 = df_codones.to_csv("historial_codones" + "_" + str(indice) + ".csv", index = False), 
+    dataframe_cod6 = df_bicodones.to_csv("historial_bicodones" + "_" + str(indice) + ".csv", index = False)
 
     return dataframe_cod3, dataframe_cod6
 
 #   4   -   Generación de la lista de archivos
-lista = lista_de_archivos("C:\\Users\\Usuario\\Desktop\\Tesis\\droso12spp\\archivos")
+lista = lista_de_archivos("/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros")
 
 #   5   -   Creación de los dataframes
 lista_de_dataframes_cod3 , lista_de_dataframes_cod6 = [], []
-indice = 0
+indice_indicado = 0
 for archivo in lista:
     array_de_secuencias = extraer_secuencias(archivo)
-    calculos_de_conservacion(array_de_secuencias)
-    indice += 1
+    calculos_de_conservacion(array_de_secuencias, indice_indicado)
+    indice_indicado += 1
 
+#   6   -   Combinación de los dataframes en uno solo
+import os, pandas as pd
+directorio_dataframes = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros"
+contenido = os.listdir(directorio_dataframes)
+
+archivos_dataframe_codones, archivos_dataframe_bicodones = [], []
+for fichero in contenido:
+    if os.path.isfile(os.path.join(directorio_dataframes, fichero)) and fichero.startswith("historial_codones") and fichero.endswith('.csv'):
+        archivos_dataframe_codones.append(fichero)
+    elif os.path.isfile(os.path.join(directorio_dataframes, fichero)) and fichero.startswith("historial_bicodones") and fichero.endswith('.csv'):
+        archivos_dataframe_bicodones.append(fichero)
+
+csv_codones_combinado = pd.concat([pd.read_csv(archivo) for archivo in archivos_dataframe_codones])
+csv_bicodones_combinado = pd.concat([pd.read_csv(archivo) for archivo in archivos_dataframe_bicodones])
+
+csv_codones_combinado.to_csv("data3_drosophila.csv", index = False)
+csv_bicodones_combinado.to_csv("data6_drosophila.csv", index = False)
