@@ -168,7 +168,12 @@ def calculos_de_conservacion(array_de_secuencias, indice):
     
     print("El ensamblaje ha sido exitoso. Creando dataframes...")
 
+    #   Creación de dataframes y cambio de nombre de las columnas
     df_codones, df_bicodones = pd.DataFrame(array_codones), pd.DataFrame(array_bicodones)
+    df_codones = df_codones.rename(columns = {0:'codon', 1:'referencia', 2:'conservacion'})
+    df_bicodones = df_bicodones.rename(columns = {0:'bicodon', 1:'referencia', 2:'conservacion'})
+
+    #   Exportación de dataframes a .CSV
     dataframe_cod3 = df_codones.to_csv("historial_codones" + "_" + str(indice) + ".csv", index = False), 
     dataframe_cod6 = df_bicodones.to_csv("historial_bicodones" + "_" + str(indice) + ".csv", index = False)
 
@@ -198,8 +203,10 @@ for fichero in contenido:
     elif os.path.isfile(os.path.join(directorio_dataframes, fichero)) and fichero.startswith("historial_bicodones") and fichero.endswith('.csv'):
         archivos_dataframe_bicodones.append(fichero)
 
-csv_codones_combinado = pd.concat([pd.read_csv(archivo) for archivo in archivos_dataframe_codones]) #   Revisar
-csv_bicodones_combinado = pd.concat([pd.read_csv(archivo) for archivo in archivos_dataframe_bicodones]) #   Revisar
 
-csv_codones_combinado.to_csv("data3_drosophila.csv", index = False)
-csv_bicodones_combinado.to_csv("data6_drosophila.csv", index = False)
+import rpy2.robjects as ro
+from rpy2.robjects.packages import importr
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.conversion import localconverter
+
+# Insertar acá la integración de R
