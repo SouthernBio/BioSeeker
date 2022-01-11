@@ -7,13 +7,19 @@ combinar_dataframes = function(dataframe_codones, dataframe_bicodones){
   data6$bicodones <- data6$bicodones + df2$bicodones
 
   for(archivo in dataframe_codones){
-    data3$referencia <- data3$referencia + archivo$referencia
-    data3$conservacion <- data3$conservacion + archivo$conservacion
+    read.csv(archivo)
+    attach(data3)
+    referencia <- referencia + archivo$referencia
+    conservacion <- conservacion + archivo$conservacion
+    detach(data3)
   }
 
   for(archivo in dataframe_bicodones){
-    data6$referencia <- data6$referencia + archivo$referencia
-    data6$conservacion <- data6$referencia + archivo$conservacion
+    read.csv(archivo)
+    attach(data6)
+    referencia <- referencia + archivo$referencia
+    conservacion <- referencia + archivo$conservacion
+    detach(data6)
   }
   bicod <- subset(data6, referencia > 0)
   bicod2 <- subset(bicod, conservacion > 0)
