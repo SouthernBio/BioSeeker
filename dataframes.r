@@ -1,3 +1,4 @@
+# 1 - Función que une dataframes en uno solo
 combinar_dataframes = function(dataframe_codones, dataframe_bicodones){
   df1 <- read.csv(dataframe_codones[1])
   df2 <- read.csv(dataframe_bicodones[1])
@@ -28,5 +29,3 @@ combinar_dataframes = function(dataframe_codones, dataframe_bicodones){
   write.csv(data6,"/home/usuario/Escritorio/data6_facundo.csv", row.names = TRUE)
   write.csv(bicod2,"/home/usuario/Escritorio/data6_infoutil.csv", row.names = TRUE)
 }
-
-
