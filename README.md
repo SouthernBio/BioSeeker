@@ -20,5 +20,4 @@ $ pip3 install pandas
 ```
 
 ### 3. ¿Cómo se usa?
-El archivo `script_conservacion.py` debe colocarse en el directorio donde se encuentra el archivo FASTA que desea analizar. El script hace uso de la librería `os`, por lo que debe modificar manualmente el mismo para añadir el directorio de trabajo donde se encuentran las secuencias a analizar. Este directorio puede obtenerlo automáticamente abriendo una terminal desde la carpeta de las secuencias y tipeando `pwd`.  
-
+El archivo `script_conservacion.py` debe colocarse en el directorio donde se encuentra el conjunto de archivos de alineamiento múltiple que se desean analizar. El script hace uso de la librería `os`, por lo que debe modificar manualmente el mismo para añadir el directorio de trabajo donde se encuentran las secuencias a analizar. Este directorio puede obtenerlo automáticamente abriendo una terminal desde la carpeta de las secuencias y tipeando `pwd`. En el mismo directorio donde se encuentran los archivos de alineamiento múltiple, debe crear una carpeta llamada "dataframes", en donde se localiza un script de R que realiza el ensamblado de los dataframes generados.
