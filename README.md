@@ -4,7 +4,7 @@ Este script facilita el cálculo de la tasa de conservación de codones y pares 
 
 ### 1. ¿Cómo funciona?
 
-El script toma como input un archivo que contiene genes homólogos previamente alineados, en formato FASTA. Luego de un procesamiento mínimo del archivo para extraer los datos, se crea una matriz mediante la librería `numpy`, y así poder iterar sobre porciones de la misma. La información obtenida se almacena en un archivo CSV, el cual se crea utilizando la librería `pandas`
+El script toma como input un archivo (o conjunto de archivos) que contiene genes homólogos previamente alineados, en formato FASTA. Luego de un procesamiento mínimo del archivo para extraer los datos, se crea una matriz mediante la librería `numpy`, y así poder iterar sobre porciones de la misma. La información obtenida (conteo de codones en la secuencia de referencia, y cantidad de veces que se conservó el codon) se almacena en un archivo CSV, el cual se crea utilizando la librería `pandas`
 
 ### 2. Dependencias
 
