@@ -190,24 +190,11 @@ for archivo in lista:
     calculos_de_conservacion(array_de_secuencias, indice_indicado)
     indice_indicado += 1
 
-#   6   -   Combinación de los dataframes en uno solo
-# REVISAR ESTA SECCIÓN!
-import os, pandas as pd
-directorio_dataframes = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros"
+#   6   -   Mover dataframes a otra carpeta para procesarlos con R
+import os, shutil
+directorio_dataframes = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/"
 contenido = os.listdir(directorio_dataframes)
 
-archivos_dataframe_codones, archivos_dataframe_bicodones = [], []
 for fichero in contenido:
-    if os.path.isfile(os.path.join(directorio_dataframes, fichero)) and fichero.startswith("historial_codones") and fichero.endswith('.csv'):
-        archivos_dataframe_codones.append(fichero)
-    elif os.path.isfile(os.path.join(directorio_dataframes, fichero)) and fichero.startswith("historial_bicodones") and fichero.endswith('.csv'):
-        archivos_dataframe_bicodones.append(fichero)
-
-
-import rpy2.robjects as ro
-import subprocess
-
-#   Insertar acá la integración de R
-#   Esto no está completo. Ver cómo conectar este robject con las listas de dataframes 
-
-subprocess.call(['RScript', 'dataframes.R', archivos_dataframe_codones, archivos_dataframe_bicodones])
+    if os.path.isfile(os.path.join(directorio_dataframes, fichero)) and fichero.startswith("historial") and fichero.endswith('.csv'):
+        shutil.move(directorio_dataframes + fichero, "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/" + fichero)
