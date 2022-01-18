@@ -2,7 +2,7 @@
 setwd("~/Documentos/GitHub/Conservacion-de-codones-raros/dataframes")
 
 # 1 - Función que une dataframes en uno solo
-combinar_dataframes = function(dataframe_codones, dataframe_bicodones){ # REVISAR: Error in file(file, "rt") : no se puede abrir la conexión
+combinar_dataframes = function(dataframe_codones, dataframe_bicodones){ 
  
   df1 <- read.csv(dataframe_codones[1])
   df2 <- read.csv(dataframe_bicodones[1])
@@ -13,22 +13,17 @@ combinar_dataframes = function(dataframe_codones, dataframe_bicodones){ # REVISA
   
   directorio <- getwd()
   
+  
   for(archivo in dataframe_codones){
-    dfc <- read.csv(paste(directorio, archivo, collapse = ""))
-    dfc <- as.data.frame(dfc)
-    attach(data3)
-    referencia <- referencia + dfc$referencia
-    conservacion <- conservacion + dfc$conservacion
-    detach(data3)
+    dfc <- read.csv(paste(directorio, archivo, sep = "/", collapse = NULL))
+    data3$referencia <- data3$referencia + dfc$referencia
+    data3$conservacion <- data3$conservacion + dfc$conservacion
   }
 
   for(archivo in dataframe_bicodones){
-    dfb <- read.csv(paste(directorio, archivo, collapse = ""))
-    dfb <- as.data.frame(dfb)
-    attach(data6)
-    referencia <- referencia + dfb$referencia
-    conservacion <- referencia + dfb$conservacion
-    detach(data6)
+    dfb <- read.csv(paste(directorio, archivo, sep = "/", collapse = NULL))
+    data6$referencia <- data6$referencia + dfb$referencia
+    data6$conservacion <- data6$referencia + dfb$conservacion
   }
   bicod <- subset(data6, referencia > 0)
   bicod2 <- subset(bicod, conservacion > 0)
@@ -44,3 +39,6 @@ temp2 = list.files(pattern="historial_bicodones*")
 temp1
 
 combinar_dataframes(temp1, temp2)
+
+dataframe_de_prueba = data.frame(codon = character(), referencia = numeric(), conservacion = numeric())
+
