@@ -25,6 +25,7 @@ combinar_dataframes = function(dataframe_codones, dataframe_bicodones){
   
   # Llenado de las columnas para el dataframe de codones:
   for(archivo in dataframe_codones){
+    print(paste("Procesando", archivo, sep = " ", collapse = NULL))
     dfc <- read.csv(paste(directorio, archivo, sep = "/", collapse = NULL))
     data3$referencia <- data3$referencia + dfc$referencia
     data3$conservacion <- data3$conservacion + dfc$conservacion
@@ -32,9 +33,10 @@ combinar_dataframes = function(dataframe_codones, dataframe_bicodones){
 
   # Llenado de las columnas para el dataframe de bicodones:
   for(archivo in dataframe_bicodones){
+    print(paste("Procesando", archivo, sep = " ", collapse = NULL))
     dfb <- read.csv(paste(directorio, archivo, sep = "/", collapse = NULL))
     data6$referencia <- data6$referencia + dfb$referencia
-    data6$conservacion <- data6$referencia + dfb$conservacion
+    data6$conservacion <- data6$conservacion + dfb$conservacion
   }
   
   # En caso de que hayan muchos bicodones sin información relevante:
