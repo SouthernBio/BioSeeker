@@ -1,5 +1,6 @@
 
 dataframes/.RData
 dataframes/.Rhistory
-*.afa
-*.csv
+dataframes/historial*.csv
+/*.afa
+/historial*.csv
