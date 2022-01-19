@@ -1,7 +1,6 @@
 # Calculadora de tasa de conservación de codones y pares de codones
 
-Este script facilita el cálculo de la tasa de conservación de codones y pares de codones. 
-
+Este proyecto facilita el cálculo de la tasa de conservación de codones y pares de codones para un género. Forma parte de mi actual trabajo de tesina de ingeniería.
 ### 1. ¿Cómo funciona?
 
 El script toma como input un archivo (o conjunto de archivos) que contiene genes homólogos previamente alineados, en formato FASTA. Luego de un procesamiento mínimo del archivo para extraer los datos, se crea una matriz mediante la librería `numpy`, y así poder iterar sobre porciones de la misma. La información obtenida (conteo de codones en la secuencia de referencia, y cantidad de veces que se conservó el codon) se almacena en un archivo CSV, el cual se crea utilizando la librería `pandas`
@@ -17,6 +16,18 @@ Una vez instalados Python y su gestor de paquetes, puede proceder a installar `n
 ```bash
 $ pip3 install numpy
 $ pip3 install pandas
+```
+Para el ensamblado de los dataframes (y su posterior análisis, el cual no está contemplado en este repositorio por el momento) generados se usa R. Para instalar el lenguaje se usan los siguientes comandos:
+```bash
+$ sudo apt update
+$ sudo apt -y install r-base gdebi-core
+```
+Luego de descargar el software RStudio (que funciona en base a R) [del sitio oficial](https://rstudio.com/products/rstudio/download/#download), se procede a instalarlo. 
+
+```bash
+$ ls
+rstudio-1.2.5019-amd64.deb # Ejemplo de archivo .deb descargado, el nombre puede variar según la versión
+$ sudo gdebi rstudio-1.2.5019-amd64.deb
 ```
 
 ### 3. ¿Cómo se usa?
