@@ -39,7 +39,7 @@ codones_barplot
 
 # Ahora para bicodones:
 datos_bicodones$tasaConservacion <- datos_bicodones$conservacion / datos_bicodones$referencia
-datos_bicodones$esRaro <- c(length = 3721) # Default: FALSE
+datos_bicodones$esRaro <- c(length = 3721) 
 datos_bicodones$primerCodon <- character(length = 3721)
 datos_bicodones$segundoCodon <- character(length = 3721)
 
@@ -100,10 +100,21 @@ for(i in codones_raros){
 
 datos_bicodones$esRaro <- datos_bicodones$cod1Bool * datos_bicodones$cod2Bool # Raro: 1, no raro: 0
 
+# Ajuste lineal
+modelo_lineal <- lm(tasaConservacion ~ productoDeTasas, data = datos_bicodones)
 
+summary(modelo_lineal)
+plot(modelo_lineal) # La distribución no es normal. Pero ajusta con un r cuadrado de 0.77
 
+modelo <- ggplot(data = datos_bicodones,
+                 aes(   x = productoDeTasas,
+                        y = tasaConservacion,
+                        color = esRaro)) +
+                 geom_point(stat = "identity")
+modelo
 
-
+write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
+write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
 
 
 
