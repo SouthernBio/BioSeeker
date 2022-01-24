@@ -104,7 +104,7 @@ datos_bicodones$esRaro <- datos_bicodones$cod1Bool * datos_bicodones$cod2Bool # 
 modelo_lineal <- lm(tasaConservacion ~ productoDeTasas, data = datos_bicodones)
 
 summary(modelo_lineal)
-plot(modelo_lineal) # La distribución no es normal. Pero ajusta con un r cuadrado de 0.77
+plot(modelo_lineal) # No hay normalidad. Pero ajusta con un r cuadrado de 0.77
 
 modelo <- ggplot(data = datos_bicodones,
                  aes(   x = productoDeTasas,
@@ -116,9 +116,14 @@ modelo
 write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
 write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
 
+bicodones_raros <- subset(datos_bicodones, esRaro == 1)
 
-
-
+plot_pares_inhibitorios <- ggplot(data = bicodones_raros,
+                                  aes(   x = productoDeTasas,
+                                         y = tasaConservacion,
+                                     color = "blueviolet")) +
+                           geom_point()
+plot_pares_inhibitorios
 
 
 
