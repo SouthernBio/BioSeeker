@@ -110,7 +110,8 @@ modelo <- ggplot(data = datos_bicodones,
                  aes(   x = productoDeTasas,
                         y = tasaConservacion,
                         color = esRaro)) +
-                 geom_point(stat = "identity")
+          geom_point(stat = "identity")
+
 modelo
 
 write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
@@ -120,12 +121,13 @@ bicodones_raros <- subset(datos_bicodones, esRaro == 1)
 
 plot_pares_inhibitorios <- ggplot(data = bicodones_raros,
                                   aes(   x = productoDeTasas,
-                                         y = tasaConservacion,
-                                     color = "blueviolet")) +
-                           geom_point()
+                                         y = tasaConservacion)) +
+                           geom_point(color = "blueviolet") +
+                           xlim(0, 0.2) +
+                           ylim(0, 0.2) +
+                           geom_hline(yintercept = 0.05) +
+                           geom_vline(xintercept = 0.05)
 plot_pares_inhibitorios
-
-
 
 
 
