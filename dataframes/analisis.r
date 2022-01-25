@@ -11,10 +11,6 @@ datos_codones$tasaConservacion <- datos_codones$conservacion / datos_codones$ref
 codones_raros <- c("TTT", "TTA", "CTT", "CTC", "CTA", "ATT", "ATA", "GTT", "GTC", "GTA", "TCT", 
                    "TCA", "CCT", "ACT", "ACA", "ACG", "GCT", "GCA", "GCG", "TAT", "CAT", "CAA",
                    "AAT", "AAA", "GAA", "TGT", "CGT", "CGA", "CGG", "GCT", "GGG")
-vector_logico <- c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, 
-                   TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, 
-                   TRUE, TRUE, TRUE, TRUE, TRUE)
-dflogic <- data.frame(codones_raros, vector_logico) # Solución momentánea, buscar una forma más elegante
 
 # Establecer codones raros
 # Raro: TRUE, no raro: FALSE
@@ -85,7 +81,7 @@ datos_bicodones$cod2Bool <- logical(length = 3721)
 for(i in codones_raros){
   for(j in datos_bicodones$primerCodon){
     if(i == j){
-      datos_bicodones[datos_bicodones$primerCodon == i, 11] <- dflogic[1, 2]
+      datos_bicodones[datos_bicodones$primerCodon == j, 11] <- TRUE
     }
   }
 }
@@ -93,7 +89,7 @@ for(i in codones_raros){
 for(i in codones_raros){
   for(k in datos_bicodones$segundoCodon){
     if(i == k){
-      datos_bicodones[datos_bicodones$segundoCodon == i, 12] <- dflogic[1, 2]
+      datos_bicodones[datos_bicodones$segundoCodon == K, 12] <- TRUE
     }
   }
 }
@@ -101,10 +97,10 @@ for(i in codones_raros){
 datos_bicodones$esRaro <- datos_bicodones$cod1Bool * datos_bicodones$cod2Bool # Raro: 1, no raro: 0
 
 # Ajuste lineal
-modelo_lineal <- lm(tasaConservacion ~ productoDeTasas, data = datos_bicodones)
+modelo_lineal <- lm(tasaConservacion ~ 0 + productoDeTasas, data = datos_bicodones)
 
 summary(modelo_lineal)
-plot(modelo_lineal) # No hay normalidad. Pero ajusta con un r cuadrado de 0.77
+plot(modelo_lineal) # No hay normalidad. Pero ajusta con un r cuadrado de 0.81
 
 modelo <- ggplot(data = datos_bicodones,
                  aes(   x = productoDeTasas,
@@ -114,20 +110,45 @@ modelo <- ggplot(data = datos_bicodones,
 
 modelo
 
-write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
-write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
-
 bicodones_raros <- subset(datos_bicodones, esRaro == 1)
 
 plot_pares_inhibitorios <- ggplot(data = bicodones_raros,
                                   aes(   x = productoDeTasas,
                                          y = tasaConservacion)) +
+                          geom_rect(aes( xmin = 0, xmax = 0.05, 
+                                          ymin = 0, ymax = 0.05)) +
                            geom_point(color = "blueviolet") +
-                           xlim(0, 0.2) +
+                           xlim(0, 0.20) +
                            ylim(0, 0.2) +
-                           geom_hline(yintercept = 0.05) +
-                           geom_vline(xintercept = 0.05)
+                           geom_hline(yintercept = 0.05, linetype = "dotdash") +
+                           geom_vline(xintercept = 0.05, linetype = "dotdash") +
+                           geom_abline(aes(intercept = 0,
+                                               slope = 1)) +
+                           labs(x = "Producto de tasas de conservación de codones constituyentes",
+                                y = "Tasa de conservación real del bicodón raro") 
+                           
 plot_pares_inhibitorios
+
+# Seleccionar aquellos codones cuya tasa de conservación supera la predicha
+datos_bicodones$tasaRealSobrePredicha <- datos_bicodones$tasaConservacion / datos_bicodones$productoDeTasas
+bicodones_raros <- subset(datos_bicodones, esRaro == 1)
+bicodones_raros_conservados <- subset(bicodones_raros, tasaRealSobrePredicha > 50)
+
+# Ver qué sucede con los bicodones normales
+bicodones_normales <- subset(datos_bicodones, esRaro == 0)
+bicodones_normales_conservados <- subset(bicodones_normales, tasaRealSobrePredicha > 50)
+
+# write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
+# write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
+
+
+
+
+
+
+
+
+
 
 
 
