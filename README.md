@@ -12,12 +12,11 @@ Para ejecutar este script debe instalar el lenguaje Python y el gestor de paquet
 $ sudo apt-get update
 $ sudo apt-get install python3 python3-pip
 ```
-Una vez instalados Python y su gestor de paquetes, puede proceder a installar `numpy` y `pandas` mediante los siguientes comandos: 
+Una vez instalados Python y su gestor de paquetes, puede proceder a installar `numpy` y `pandas` mediante el siguiente comando: 
 ```bash
-$ pip3 install numpy
-$ pip3 install pandas
+$ pip3 install numpy pandas
 ```
-Para el ensamblado de los dataframes (y su posterior análisis, el cual no está contemplado en este repositorio por el momento) generados se usa R. Para instalar el lenguaje se usan los siguientes comandos:
+Para el ensamblado de los dataframes generados y su posterior análisis se usa R. Para instalar el lenguaje se usan los siguientes comandos:
 ```bash
 $ sudo apt update
 $ sudo apt -y install r-base gdebi-core
