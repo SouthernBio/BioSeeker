@@ -153,10 +153,6 @@ plot_pares_inhibitorios_conservados
 bicodones_normales <- subset(datos_bicodones, esRaro == 0)
 bicodones_normales_conservados <- subset(bicodones_normales, tasaRealSobrePredicha > 50)
 
-# Grabar dataframes
-write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
-write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
-
 # Ajuste lineal
 modelo_lineal <- lm(tasaConservacion ~ 0 + productoDeTasas, data = datos_bicodones)
 
@@ -197,3 +193,6 @@ for(i in peptido_segun_codon$codon){
 
 datos_bicodones$dipeptido <- paste(datos_bicodones$primerPeptido, datos_bicodones$segundoPeptido, sep = "-")
 
+# Grabar dataframes
+write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
+write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
