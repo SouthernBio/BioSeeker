@@ -161,6 +161,7 @@ plot(modelo_lineal) # No hay normalidad. Pero ajusta con un r cuadrado de 0.81
 
 # Z-score distribution plots
 # Necesito agrupar pares de codones de acuerdo al dipéptido que codifican
+# Además necesito agregar pseudocounts a los pares de codones cuya conservación fue cero
 codon   <- c("TTT", "TTC", "TTA", "TTG", "CTT", "CTC", "CTA", "CTG", "ATT", "ATC", "ATA", "ATG", "GTT", "GTC", "GTA", "GTG",
              "TCT", "TCC", "TCA", "TCG", "CCT", "CCC", "CCA", "CCG", "ACT", "ACC", "ACA", "ACG", "GCT", "GCC", "GCA", "GCG",
              "TAT", "TAC", "CAT", "CAC", "CAA", "CAG", "AAT", "AAC", "AAA", "AAG", "GAT", "GAC", "GAA", "GAG",
@@ -192,7 +193,25 @@ for(i in peptido_segun_codon$codon){
 }
 
 datos_bicodones$dipeptido <- paste(datos_bicodones$primerPeptido, datos_bicodones$segundoPeptido, sep = "-")
+datos_bicodones$conservacion[datos_bicodones$tasaConservacion == 0] <- 1 #  Agregué un pseudocount
+datos_bicodones$factorDipeptido <- factor(datos_bicodones$dipeptido)
+datos_bicodones$logTasaConservacion <- log(datos_bicodones$tasaConservacion)
+
+library(plyr)
+
 
 # Grabar dataframes
-write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
-write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
+#write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
+#write.csv(datos_bicodones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_bicodones.csv", row.names = FALSE)
+
+
+
+
+
+
+
+
+
+
+
+
