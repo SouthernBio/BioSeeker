@@ -1,6 +1,6 @@
 ---
 title: "Análisis de la tasa de conservación de codones y pares de codones"
-output: html_notebook
+output: github_document
 ---
 
 ##### Autor: Facundo Martínez
