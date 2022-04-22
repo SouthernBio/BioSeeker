@@ -1,9 +1,6 @@
 ---
 title: "Análisis de la tasa de conservación de codones y pares de codones"
-output: 
-  html_notebook:
-    theme:
-      bootswatch: solar
+output: html_notebook
 ---
 
 ##### Autor: Facundo Martínez
@@ -70,7 +67,12 @@ codones_barplot <- ggplot(datos_codones,
                    labs(    x = "Codón", 
                             y = "Tasa de conservación",
                         title = "Conservación de codones individuales") +
-                   guides(fill=guide_legend(title="Codón raro:"))
+                   guides(fill = guide_legend(title = "¿Es un codón raro?")) +
+                   theme(axis.text.x = element_text(angle = 90, 
+                                                    hjust = 1, 
+                                                    vjust = 0.5,
+                                                    size = 6,
+                                                    face = "bold"))
 
 codones_barplot
 ```
@@ -240,6 +242,18 @@ Puede verse que el modelo tiene un muy buen ajuste lineal, ya que el valor de R 
 
 ## 3. Z-score Distribution Plot
 
+### 3.1 Ecuación del z-score
+
+Para calcular el z-score se utiliza la siguiente ecuación:
+
+![](images/zscore-01.png)
+
+Donde Xcp representa la tasa normalizada de conservación del par de codones, udp depresenta la media normalizada de la tasa de conservación de la familia de pares de codones que codifican un mismo dipéptido, y sigmadp es el desvío estándar para la familia de dipéptidos. Esta ecuación asume que la distribución de los datos es normal. El z-score nos da una idea de cuán alejados están ciertos pares de codones de otros.
+
+### 3.2 Cálculo de las medias y desvíos para dipéptidos
+
+Para medir la distancia de una muestra con respecto a su media en unidades de desvío estándar, es necesario hacer un cálculo del z-score a partir del logaritmo decimal de las tasas normalizadas de conservación para cada grupo de dipéptidos.
+
 ```{r}
 codon   <- c("TTT", "TTC", "TTA", "TTG", "CTT", "CTC", "CTA", "CTG", "ATT", "ATC", "ATA", "ATG", "GTT", "GTC", "GTA", "GTG",
              "TCT", "TCC", "TCA", "TCG", "CCT", "CCC", "CCA", "CCG", "ACT", "ACC", "ACA", "ACG", "GCT", "GCC", "GCA", "GCG",
@@ -272,17 +286,70 @@ for(i in peptido_segun_codon$codon){
 }
 
 datos_bicodones$dipeptido <- paste(datos_bicodones$primerPeptido, datos_bicodones$segundoPeptido, sep = "-")
-datos_bicodones$factorDipeptido <- factor(datos_bicodones$dipeptido)
 
 # Para el Z-score necesito calcular la media de la tasa real sobre predicha
 # en cada familia de dipeptidos, ademas del desvio estandar de la familia
 
-vector_auxiliar <- c() #  Almacena las tasas
-for(i in levels(datos_bicodones$factorDipeptido)){
-  for(j in datos_bicodones$dipeptido){
-    if(i == j){
-      vector_auxiliar <- c(vector_auxiliar, datos_bicodones[datos_bicodones$dipeptido == j, 13])
+datos_bicodones$logTasaNormalizada <- log(datos_bicodones$tasaRealSobrePredicha)
+
+# datos <- data.frame(
+#   dipeptido = levels(factor(analisis_bicodones$dipeptido)),
+#   media = tapply(analisis_bicodones$logTasaNormalizada, analisis_bicodones$dipeptido, mean),
+#   desvio = tapply(analisis_bicodones$logTasaNormalizada, analisis_bicodones$dipeptido, sd)
+# )
+
+datos <- read.csv("datos_zscore.csv")
+head(datos)
+```
+
+Por un problema de R, el anterior bloque de códigos no retorna un dataframe con una lista de dipéptidos, sino una lista con las posiciones de cada péptido correspondiente en el vector `peptido`. Por eso he importado un nuevo dataframe hecho a partir de una versión anterior de mis datos, que sí contiene los grupos de dipéptidos.
+
+### 3.3 Z-score para cada par de codones
+
+Usando las medias y desvíos calculados anteriormente, procedo a calcular el z-score:
+
+```{r}
+analisis_bicodones_V2 <- read.csv("analisis_bicodones_V2.csv")
+analisis_bicodones_V2$zscore <- numeric(length = 3721)
+
+for (i in datos_zscore$dipeptido){
+  u = datos_zscore[datos_zscore$dipeptido == i, 2]
+  sdev = datos_zscore[datos_zscore$dipeptido == i, 3]
+  for (j in analisis_bicodones_V2$dipeptido){
+    if (i == j){
+      x <- analisis_bicodones_V2[analisis_bicodones_V2$dipeptido == j, 18]
+      z = (x - u)/sdev
+      analisis_bicodones_V2[analisis_bicodones_V2$dipeptido == j, 19] <- z
     }
   }
 }
 ```
+
+### 3.4 Z-scores visualizados en histograma
+
+Ya calculados los z-scores en el paso anterior, procedo a graficarlos:
+
+```{r}
+histograma <- ggplot(analisis_bicodones_V2,
+                     aes(x = zscore, fill = factor(esRaro))) +
+              geom_histogram(binwidth = 0.25,
+                             colour = 'black',
+                             position = "identity",
+                             alpha = 0.3, aes(y = ..density..)) +
+              geom_density(alpha = 0.7)
+histograma
+```
+
+## 4. Contenido de GC
+
+A fines investigativos se desea conocer si existe una preferencia por GC en los pares de codones. Para eso se ejecutan las siguientes líneas de código en consola:
+
+```{r}
+bicodones_normales_conservados$bicodon
+```
+
+```{r}
+bicodones_raros_conservados$bicodon
+```
+
+En el caso de los pares de codones normales, se observa que 3 de los 4 pares presentan un motivo -GG en el primer codón del par. Mientras que en los pares de codones raros se observa que hay una clara preferencia por GC en la primera letra del primer codón.

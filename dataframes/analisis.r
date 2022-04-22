@@ -1,4 +1,4 @@
-setwd("/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/")
+setwd("/home/usuario/Documents/GitHub/Conservacion-de-codones-raros/dataframes/")
 library(ggplot2)
 # Importar datasets
 datos_codones <- read.csv("data3_facundo.csv")
@@ -157,7 +157,7 @@ bicodones_normales_conservados <- subset(bicodones_normales, tasaRealSobrePredic
 modelo_lineal <- lm(tasaConservacion ~ 0 + productoDeTasas, data = datos_bicodones)
 
 summary(modelo_lineal)
-plot(modelo_lineal) # No hay normalidad. Pero ajusta con un r cuadrado de 0.81
+#plot(modelo_lineal) # No hay normalidad. Pero ajusta con un r cuadrado de 0.81
 
 
 # Z-score distribution plots
@@ -194,20 +194,19 @@ for(i in peptido_segun_codon$codon){
   }
 }
 
+# Algo va mal. Los loops for están insertando el índice del peptido en lugar del péptido
+
+
+
 datos_bicodones$dipeptido <- paste(datos_bicodones$primerPeptido, datos_bicodones$segundoPeptido, sep = "-")
 datos_bicodones$factorDipeptido <- factor(datos_bicodones$dipeptido)
 
 # Para el Z-score necesito calcular la media de la tasa real sobre predicha
 # en cada familia de dipeptidos, ademas del desvio estandar de la familia
 
-vector_auxiliar <- c() #  Almacena las tasas
-for(i in levels(datos_bicodones$factorDipeptido)){
-  for(j in datos_bicodones$dipeptido){
-    if(i == j){
-      vector_auxiliar <- c(vector_auxiliar, datos_bicodones[datos_bicodones$dipeptido == j, 13])
-    }
-  }
-}
+datos_bicodones$logTasaNormalizada <- log(datos_bicodones$tasaRealSobrePredicha)
+
+tapply(datos_bicodones$logTasaNormalizada, datos_bicodones$factorDipeptido, mean)
 
 # Grabar dataframes
 #write.csv(datos_codones, file = "/home/usuario/Documentos/GitHub/Conservacion-de-codones-raros/dataframes/analisis_codones.csv", row.names = FALSE)
