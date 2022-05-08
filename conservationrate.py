@@ -1,7 +1,10 @@
 #   3   -   Función de cálculo de tasas de conservación de codones y bicodones
 #           a partir de un array de secuencias
 #           donde ORF puede tomar valores {0, 1, 2} según el marco de lectura a considerar
-def calculos_de_conservacion(array_de_secuencias, indice, ORF): 
+def calculos_de_conservacion(array_de_secuencias, indice, ORF):
+    if ORF not in {0, 1 ,2}:
+        raise Exception("Error: 'ORF' solo puede tomar valores en {0, 1, 2}")
+
     import numpy as np, pandas as pd
     codones, bicodones = [], []
     n = 3
