@@ -5,7 +5,9 @@ def calculos_de_conservacion(array_de_secuencias, indice, ORF):
     if ORF not in {0, 1 ,2}:
         raise Exception("Error: 'ORF' solo puede tomar valores en {0, 1, 2}")
 
-    import numpy as np, pandas as pd
+    import numpy as np
+    import pandas as pd
+    
     codones, bicodones = [], []
     n = 3
 
@@ -20,7 +22,7 @@ def calculos_de_conservacion(array_de_secuencias, indice, ORF):
             bicodones.append(bicodon)  
 
     #   Conversión a Numpy Array
-    codones, bicodones = np.asarray(codones), np.asarray(bicodones)
+    codones, bicodones = np.asarray(codones), np.asarray(bicodones) # Numpy arroja una advertencia VisibleDeprecationWarning, dtype = object
 
     #   Listas patrón de codones y bicodones
     #   Esta lista no contempla, obviamente, los codones de stop
