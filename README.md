@@ -1,33 +1,26 @@
-# Herramientas de análisis de conservación de codones y pares de codones
+# Algorithm for the analysis of codon/bicodon conservation rates across linked species
 
-Este proyecto facilita el cálculo de la tasa de conservación de codones y pares de codones para un género. Forma parte de mi actual trabajo de tesina de ingeniería.
-### 1. ¿Cómo funciona?
+This project facilitates calculing codon and bicodon conservation rates for a given genus. 
 
-El archivo `script_conservacion.py` toma como input un fichero (o conjunto de ficheros) que contiene genes homólogos previamente alineados, en formato FASTA. Luego de un procesamiento mínimo del fichero para extraer los datos, se crea una matriz mediante la librería `numpy`, y así poder iterar sobre porciones de la misma. La información obtenida (conteo de codones en la secuencia de referencia, y cantidad de veces que se conservó el codon) se almacena en un archivo CSV, el cual se crea utilizando la librería `pandas`. Por cada archivo de alineamiento múltiple se generan dos dataframes: uno para codones, y otro para pares de codones. En la carpeta `/dataframes` podrán encontrar dos scripts de R: `dataframes.r` y `analisis.r`. El primer script (`dataframes.r`) realiza un ensamblado de los dataframes localizados en esa carpeta, y devuelve tres nuevos dataframes - uno para codones, otro para pares de codones, y un tercer dataframe opcional que comprende únicamente los pares de codones que han aparecido en las secuencias de referencia y se han conservado al menos una vez. El segundo script (`analisis.r`) procesa la información de los dataframes generados para así determinar qué codones y pares de codones poseen una tasa de conservación superior a la estimada.
+### 1. How does it work?
 
-### 2. Dependencias
+In this repo you will find a Python script called `main.py`. It takes a file (or a group of files) as input, which contains homologous genes previously aligned, in FASTA format. After parsing the file(s) for data extraction, it creates a matrix using `Numpy`, in order to iterate across matrix slices. The obtained information (codon count from reference sequence, and number of times that said codon was conserved across species) is stored in a CSV file, which is created using 
+`Pandas`. For each MSA file two types of dataframes will be generated - one for codons, and another for codon pairs. The algorithm calculates codon/bicodon conservation rates across all 3 ORFs. So, there will be a total of 6 CSV files that will be generated. 
 
-Para ejecutar este script debe instalar el lenguaje Python y el gestor de paquetes `pip`, en Ubuntu puede realizarlo a través de la terminal:
+### 2. Dependencies
+
+To execute this script you must install Python and its package manager, `pip`. You can do it on Ubuntu through the terminal:
 ```bash
 $ sudo apt-get update
 $ sudo apt-get install python3 python3-pip
 ```
-Una vez instalados Python y su gestor de paquetes, puede proceder a installar `numpy` y `pandas` mediante el siguiente comando: 
+Once you have installed Python and its package manager, you can proceed to install `numpy` and `pandas`:
 ```bash
 $ pip3 install numpy pandas
 ```
-Para el ensamblado de los dataframes generados y su posterior análisis se usa R. Para instalar el lenguaje se usan los siguientes comandos:
-```bash
-$ sudo apt update
-$ sudo apt -y install r-base gdebi-core
-```
-Luego de descargar el software RStudio (que funciona en base a R) [del sitio oficial](https://rstudio.com/products/rstudio/download/#download), se procede a instalarlo. 
 
-```bash
-$ ls
-rstudio-1.2.5019-amd64.deb # Ejemplo de archivo .deb descargado, el nombre puede variar según la versión
-$ sudo gdebi rstudio-1.2.5019-amd64.deb
-```
+### 3. Additional details
+`main.py` must be edited to include the directory in which the MSA files are located. After parsing the files and calculating conservation rates, it will also generate a file called `unreadable.txt` which stores the names of MSA files that could not be parsed. Then, it will assemble all individual dataframes into 6 different dataframes that contain all the information across linked species. After the analysis is over, unnecessary dataframes will be deleted using `delete_files.bat`.
 
-### 3. ¿Cómo se usa?
-El archivo `script_conservacion.py` debe colocarse en el directorio donde se encuentra el conjunto de archivos de alineamiento múltiple que se desean analizar. El script hace uso de la librería `os`, por lo que debe modificar manualmente el mismo para añadir el directorio de trabajo donde se encuentran las secuencias a analizar. Este directorio puede obtenerlo automáticamente abriendo una terminal desde la carpeta de las secuencias y tipeando `pwd`. En el mismo directorio donde se encuentran los archivos de alineamiento múltiple, debe crear una carpeta llamada "dataframes", en donde se localizan dos scripts de R que realizan el ensamblado de los dataframes generados y el análisis correspondiente.
+### 4. Contributing
+Contributions are always welcome!
