@@ -30,7 +30,7 @@ textfile.close()
 
 #   Dataframe assembly
 directorio = "C:\\Users\\marti\\Documents\\GitHub\\Conservacion-de-codones-raros\\"
-#assembler(directorio, 0)   # ORF+0
+assembler(directorio, 0)   # ORF+0
 assembler(directorio, 1)    # ORF+1
 assembler(directorio, 2)    # ORF+2
 
