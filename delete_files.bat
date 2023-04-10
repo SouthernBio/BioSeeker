@@ -1,2 +1,2 @@
-del "C:\Users\marti\Documents\GitHub\Conservacion-de-codones-raros\historial*.csv"
-del "C:\Users\marti\Documents\GitHub\Conservacion-de-codones-raros\FB*.afa"
+del "C:\Users\YourUsername\WorkingDirectory\historial*.csv"
+del "C:\Users\YourUsername\WorkingDirectory\FB*.afa"

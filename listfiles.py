@@ -1,16 +1,16 @@
-#   1   -   Función de lectura y almacenamiento de archivos .afa
-#           En el argumento de la función se indica el directorio donde se encuentran los archivos de alineamiento
-def lista_de_archivos(directorio_de_trabajo):
+#   1   -   Function to find and store FASTA files' names
+#           The function takes a directory as argument, which contains the alignment files
+def list_of_files(working_directory):
     import os
-    directorio = directorio_de_trabajo
-    contenido = os.listdir(directorio)
+    directory = working_directory
+    contents = os.listdir(directory)
 
-    #   Se crea una lista de archivos de extensión .afa, los cuales luego serán procesados mediante otra función
-    secuencias = []
-    print("Programa iniciado. Creando lista de archivos AFA en el directorio " + directorio_de_trabajo)
-    for fichero in contenido:
-        if os.path.isfile(os.path.join(directorio, fichero)) and fichero.endswith('.afa'):
-            secuencias.append(fichero)
-    print("Se ha creado la lista de archivos de forma exitosa.")
+    #   Creating a list of FASTA files, which will be processed by another function
+    sequences = []
+    print("Program initiated. Creating list of FASTA files in directory " + working_directory)
+    for file in contents:
+        if os.path.isfile(os.path.join(directory, file)) and file.endswith('.afa'):
+            sequences.append(file)
+    print("List created successfully.")
 
-    return secuencias
+    return sequences

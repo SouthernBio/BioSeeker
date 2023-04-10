@@ -1,31 +1,33 @@
-#   3   -   Función de cálculo de tasas de conservación de codones y bicodones
-#           a partir de un array de secuencias
-#           donde ORF puede tomar valores {0, 1, 2} según el marco de lectura a considerar
-def calculos_de_conservacion(array_de_secuencias, indice, ORF):
+#   3   -   Function to calculate codon and codon pair conservation rates
+#           from an array of sequences
+#           where ORF can take values in {0, 1, 2} depending on the reading frame
+def calculations(sequences_array, indicated_index, ORF):
     if ORF not in {0, 1 ,2}:
-        raise Exception("Error: 'ORF' solo puede tomar valores en {0, 1, 2}")
+        raise Exception("Error: 'ORF' can only take values in {0, 1, 2}")
 
     import numpy as np
     import pandas as pd
     
-    codones, bicodones = [], []
+    codons = [] 
+    bicodons = []
     n = 3
 
-    #   Usando el array obtenido en la función anterior, se procede a dividir las secuencias en fragmentos de 3 y 6 bases
-    #   Los pares de codones (bicodones) se arman con un salto "n" de 3 nucleótidos
-    print(f"Creando array de codones y bicodones en el ORF+{ORF}...")
-    for _,k in array_de_secuencias:
+    #   Using the obtained array in the previous function, we proceed to divide the sequences in fragments of 3 and 6 bases
+    #   Groups of codons and bicodons are assembled with an "n" step of 3 nucleotides
+    print(f"Creando array de codons y bicodons en el ORF+{ORF}...")
+    for _,k in sequences_array:
         for j in k:   
             codon = [j[i:i+n] for i in range(ORF, len(j), n)]
             bicodon = [j[i:i+2*n] for i in range(ORF, len(j), n)]
-            codones.append(codon)
-            bicodones.append(bicodon)  
+            codons.append(codon)
+            bicodons.append(bicodon)  
 
-    #   Conversión a Numpy Array
-    codones, bicodones = np.asarray(codones), np.asarray(bicodones) # Numpy arroja una advertencia VisibleDeprecationWarning, dtype = object
+    #   Converting to Numpy array
+    codons = np.asarray(codons) 
+    bicodons = np.asarray(bicodons) # Numpy: VisibleDeprecationWarning, dtype = object. Applying the suggested solution just breaks the code.
 
-    #   Listas patrón de codones y bicodones
-    #   Esta lista no contempla, obviamente, los codones de stop
+    #   Pattern lists of codons and codon pairs
+    #   The lists, obviously, do not contemplate stop codons
     cod1 = ["AAA", "AAT", "AAC", "AAG", "ATA", "ATT", "ATC", "ATG", "ACA", "ACT", "ACC", "ACG", "AGA", "AGT", "AGC", "AGG", "TAT", "TAC", "TTA", "TTT", "TTC", "TTG", "TCA", "TCT", "TCC", "TCG", "TGT", "TGC", "TGG", "CAA", "CAT", "CAC", "CAG", "CTA", "CTT", "CTC", "CTG", "CCA", "CCT", "CCC", "CCG", "CGA", "CGT", "CGC", "CGG", "GAA", "GAT", "GAC", "GAG", "GTA", "GTT", "GTC", "GTG", "GCA", "GCT", "GCC", "GCG", "GGA", "GGT", "GGC", "GGG"]
     cod2 = cod1
     codcod = []
@@ -35,98 +37,111 @@ def calculos_de_conservacion(array_de_secuencias, indice, ORF):
             sumaComponentes = i + j
             codcod.append(sumaComponentes)
 
-    #   Listas de referencia
-    print(f"Estableciendo secuencia de referencia en el ORF+{ORF}...")
-    cod3_ref = codones[0]
-    cod6_ref = bicodones[0]
+    #   Reference lists
+    print(f"Establishing reference sequences at ORF+{ORF}...")
+    codon_reference = codons[0]
+    bicodon_reference = bicodons[0]
 
-    #   Creación de las listas accesorias para almacenar los cálculos
-    largo3, largo6 = len(cod3_ref), len(cod6_ref)
-    historial3, historial6 = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
-    his3, his6 = np.zeros(61, dtype="i"), np.zeros(3721, dtype="i")
-    his3c, his6c = np.zeros(largo3, dtype="i"), np.zeros(largo6, dtype="i")
-    conserva3, conserva6 = np.zeros(61, dtype="i"), np.zeros(3721, dtype="i")
+    #   Creating accessory lists to store the calculations
+    number_of_reference_codons = len(codon_reference) 
+    number_of_reference_bicodons = len(bicodon_reference)
 
-    #   Cálculos
-    print(f"Realizando cálculos de conservación para historial3 e historial6 en el ORF+{ORF}...")
-    contador = 0
-    for i in cod3_ref:
-        slicer = codones[:,contador]
+    codon_history = np.zeros(number_of_reference_codons, dtype="i") 
+    bicodon_history = np.zeros(number_of_reference_bicodons, dtype="i")
+
+    reference_codon_history = np.zeros(61, dtype="i") 
+    reference_bicodon_history = np.zeros(3721, dtype="i")
+
+    conserved_codon_history = np.zeros(number_of_reference_codons, dtype="i")
+    conserved_bicodon_history = np.zeros(number_of_reference_bicodons, dtype="i")
+
+    codon_conservation = np.zeros(61, dtype="i")
+    bicodon_conservation = np.zeros(3721, dtype="i")
+
+    #   Calculations
+    print(f"Computing conservation for codon_history and bicodon_history at ORF+{ORF}...")
+    count = 0
+    for i in codon_reference:
+        slicer = codons[:,count]
         for j in slicer:
             if j == i:
-                historial3[contador] += 1 
-        contador += 1
+                codon_history[count] += 1 
+        count += 1
 
-    contador = 0
-    for i in cod6_ref:
-        slicer = bicodones[:,contador]
+    count = 0
+    for i in bicodon_reference:
+        slicer = bicodons[:,count]
         for j in slicer:
             if j == i:
-                historial6[contador] += 1
-        contador += 1
+                bicodon_history[count] += 1
+        count += 1
 
-    print("Cálculo exitoso.")
-    print(f"Realizando cálculos de conservación para his3c e his6c en el ORF+{ORF}...")
+    print("Computation successful.")
+    print(f"Computing conservation rates for conserved_codon_history and conserved_bicodon_history at ORF+{ORF}...")
 
-    contador1, contador2 = 0, 0
-    aux1, aux2 = len(codones[:,0]), len(bicodones[:,0])
+    count1 = 0
+    count2 = 0
+    aux1 = len(codons[:,0])
+    aux2 = len(bicodons[:,0])
 
-    for x in historial3:
+    for x in codon_history:
         if x/aux1 > 0.9:
-            his3c[contador1] += 1
-        contador1 += 1
+            conserved_codon_history[count1] += 1
+        count1 += 1
 
-    for x in historial6:
+    for x in bicodon_history:
         if x/aux2 > 0.9:
-            his6c[contador2] += 1
-        contador2 += 1
+            conserved_bicodon_history[count2] += 1
+        count2 += 1
     
-    print("Cálculo exitoso.")
-    print(f"Ensamblando matriz de conservación (cod_ref, hisc) para el ORF+{ORF}...")
+    print("Computation successful.")
+    print(f"Assembling conservartion matrix(cod_ref, hisc) for ORF+{ORF}...")
 
-    matriz_conservacion_cod3ref = np.column_stack((np.asarray(cod3_ref), np.asarray(his3c)))
-    matriz_conservacion_cod6ref = np.column_stack((np.asarray(cod6_ref), np.asarray(his6c)))
+    conservation_matrix_reference_codons = np.column_stack((np.asarray(codon_reference), np.asarray(conserved_codon_history)))
+    conservation_matrix_reference_bicodons = np.column_stack((np.asarray(bicodon_reference), np.asarray(conserved_bicodon_history)))
 
-    contador = 0
+    count = 0
     for codon in cod1:
-        for i in matriz_conservacion_cod3ref:
+        for i in conservation_matrix_reference_codons:
             if (i[1] != '0') and (i[0] == codon):
-                conserva3[contador] += 1
-        contador += 1
+                codon_conservation[count] += 1
+        count += 1
 
-    contador = 0
+    count = 0
     for bicodon in codcod:
-        for i in matriz_conservacion_cod6ref:
+        for i in conservation_matrix_reference_bicodons:
             if (i[1] != '0') and (i[0] == bicodon):
-                conserva6[contador] += 1
-        contador += 1    
+                bicodon_conservation[count] += 1
+        count += 1    
 
-    contador = 0
+    count = 0
     for cod in cod1:
-        for i in cod3_ref:
+        for i in codon_reference:
             if cod == i:
-                his3[contador] += 1
-        contador += 1
+                reference_codon_history[count] += 1
+        count += 1
 
-    contador = 0
+    count = 0
     for bicod in codcod:
-        for i in cod6_ref:
+        for i in bicodon_reference:
             if bicod == i:
-                his6[contador] += 1
-        contador += 1
+                reference_bicodon_history[count] += 1
+        count += 1
 
-    array_codones = np.column_stack((cod1, his3, conserva3))
-    array_bicodones = np.column_stack((codcod, his6, conserva6))
+    codon_array = np.column_stack((cod1, reference_codon_history, codon_conservation))
+    bicodon_array = np.column_stack((codcod, reference_bicodon_history, bicodon_conservation))
     
-    print(f"El ensamblaje ha sido exitoso. Creando dataframes para el ORF+{ORF}...")
+    print(f"Assembly has been successful. Creating dataframes for ORF+{ORF}...")
 
-    #   Creación de dataframes y cambio de nombre de las columnas
-    df_codones, df_bicodones = pd.DataFrame(array_codones), pd.DataFrame(array_bicodones)
-    df_codones = df_codones.rename(columns = {0:'codon', 1:'referencia', 2:'conservacion'})
-    df_bicodones = df_bicodones.rename(columns = {0:'bicodon', 1:'referencia', 2:'conservacion'})
+    #   Creating dataframes and changing column names
+    codon_dataframe = pd.DataFrame(codon_array)
+    bicodon_dataframe = pd.DataFrame(bicodon_array)
 
-    #   Exportación de dataframes a .CSV
-    dataframe_cod3 = df_codones.to_csv("historial_codones" + "_" + str(indice) + "_" + str(ORF) + ".csv", index = False), 
-    dataframe_cod6 = df_bicodones.to_csv("historial_bicodones" + "_" + str(indice) + "_" + str(ORF) + ".csv", index = False)
+    codon_dataframe = codon_dataframe.rename(columns = {0:'codon', 1:'reference', 2:'conservation'})
+    bicodon_dataframe = bicodon_dataframe.rename(columns = {0:'bicodon', 1:'reference', 2:'conservation'})
 
-    return dataframe_cod3, dataframe_cod6
+    #   Exporting dataframes to CSV files
+    dataframe_codons = codon_dataframe.to_csv("history_codons" + "_" + str(indicated_index) + "_" + str(ORF) + ".csv", index = False), 
+    dataframe_bicodons = bicodon_dataframe.to_csv("history_bicodons" + "_" + str(indicated_index) + "_" + str(ORF) + ".csv", index = False)
+
+    return dataframe_codons, dataframe_bicodons
