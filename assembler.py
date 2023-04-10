@@ -19,8 +19,8 @@ def assembler(directorio, ORF):
     ceros1 = np.zeros(61)
     ceros2 = np.zeros(3721)
 
-    df_codons = pd.DataFrame({'referencia' : ceros1, 'conservacion' : ceros1}, index = cod1)
-    df_bicodons = pd.DataFrame({'referencia' :ceros2 , 'conservacion' : ceros2}, index = codcod)
+    df_codons = pd.DataFrame({'reference' : ceros1, 'conservation' : ceros1}, index = cod1)
+    df_bicodons = pd.DataFrame({'reference' :ceros2 , 'conservation' : ceros2}, index = codcod)
     
 
     contents = os.listdir(directorio)
