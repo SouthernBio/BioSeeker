@@ -1,6 +1,6 @@
 # Algorithm for the analysis of codon/bicodon conservation rates across linked species
 
-This project facilitates calculing codon and bicodon conservation rates for a given genus. 
+This project facilitates calculating codon and bicodon conservation rates for a given genus. 
 
 ### 1. About the project
 
