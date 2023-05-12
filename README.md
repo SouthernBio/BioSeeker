@@ -1,4 +1,4 @@
-# Algorithm for the analysis of codon/bicodon conservation rates across linked species
+# SmartSeeker: Algorithm for the analysis of codon/bicodon conservation rates across linked species
 
 This project facilitates calculating codon and bicodon conservation rates for a given genus.
 
