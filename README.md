@@ -1,6 +1,11 @@
-# Algorithm for the analysis of codon/bicodon conservation rates across linked species
+# SmartSeeker: Algorithm for the analysis of codon/bicodon conservation rates across linked species
 
-This project facilitates calculating codon and bicodon conservation rates for a given genus. 
+This project facilitates calculating codon and bicodon conservation rates for a given genus.
+
+### Useful Links:
+* [Project backlog (in progress)](https://github.com/fx-biocoder/codon-conservation-rate/projects)
+* [Wiki (in progress)](https://github.com/fx-biocoder/codon-conservation-rate/wiki)
+* [Paper: Conservation of location of several specific inhibitory codon pairs in the Saccharomyces sensu stricto yeasts reveals translational selection (Ghoneim et al., 2019)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/)
 
 ### 1. About the project
 
