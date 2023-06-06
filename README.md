@@ -35,5 +35,8 @@ $ pip3 install numpy pandas
 ### 5. Additional details
 `main.py` must be edited to include the directory in which the MSA files are located. After parsing the files and calculating conservation rates, it will also generate a file called `unreadable.txt` which stores the names of MSA files that could not be parsed. Then, it will assemble all individual dataframes into 6 different dataframes that contain all the information across linked species. After the analysis is over, unnecessary dataframes will be deleted using `delete_files.bat` or `delete_files.sh` depending on your current OS.
 
-### 6. How can I contribute?
-You can check the [backlog](https://github.com/fx-biocoder/codon-conservation-rate/projects?query=is%3Aopen) for pending tasks. Also, you can make modifications to the current code by creating pull requests which will then be reviewed before merging.
+## 💙 Contributing
+
+Your contribution would help me a lot in finishing this project. If you find this project useful and/or interesting, please consider supporting me on Github Sponsors, Ko-Fi or PayPal
+
+[![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/fx-biocoder) [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/biocoder) [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/facumartinez680)
