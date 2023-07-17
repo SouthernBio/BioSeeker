@@ -1,4 +1,4 @@
-from GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
+from utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
 import numpy as np 
 import pandas as pd 
 

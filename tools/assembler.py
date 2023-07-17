@@ -42,6 +42,11 @@ def assembler(directory: str, ORF: int):
                 dataframe = pd.read_csv(file, header = 0, index_col = 0)
                 df_bicodons = df_bicodons + dataframe
 
+        # Calculate conservation rates
+        df_codons["ConservationRate"] = df_codons["ConservationCount"] / df_codons["ReferenceCount"]
+        df_bicodons["ConservationRate"] = df_bicodons["ConservationCount"] / df_bicodons["ReferenceCount"]
+        
+        # Saving the data
         codon_data = df_codons.to_csv(f'codon_data_ORF+{ORF}.csv')
         codon_pairs_data = df_bicodons.to_csv(f'bicodon_data_ORF+{ORF}.csv')
 

@@ -1,4 +1,10 @@
 def intro_message():
+    """A message that displays the current version of BioSeeker
+    and the author.
+
+    Returns:
+        int: Generic return value
+    """
     print("BioSeeker v0.0.1")
     print("Author: Facundo Martínez")
     print("Official repository: https://github.com/fx-biocoder/BioSeeker")
