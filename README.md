@@ -1,5 +1,6 @@
 # BioSeeker: Python library for the analysis of codon/bicodon conservation rates across linked species
 
+![BioSeeker (c) 2023 All rights reserved](https://github.com/fx-biocoder/BioSeeker/blob/main/utils/bioseeker.png)
 This project facilitates calculating codon and bicodon conservation rates for a given genus.
 
 ### Useful Links:
