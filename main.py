@@ -1,12 +1,26 @@
 #!/usr/bin/env python3
-import listfiles as lf
-import seqxtract as sq
-import conservationrate as cr
-from assembler import assembler
+
+# Author: Facundo Martínez
+
+import tools.listfiles as lf
+import tools.seqxtract as sq
+import tools.conservationrate as cr
+from tools.assembler import assembler
+from utils.intro import intro_message
 import os
 import subprocess
 
+
 def main():
+    # Run virtual environment
+    try:
+        subprocess.call('pipenv install')
+        subprocess.call('pipenv shell')
+    except:
+        raise Exception('Virtual environment failed to activate. Aborting.')
+    
+    subprocess.run('echo BioSeeker status: ONLINE.', shell=True)
+    
     #   Generating list of files on current working directory
     BASE_PATH = os.getcwd()
     files = lf.list_of_files(BASE_PATH)
@@ -42,13 +56,24 @@ def main():
     #   Delete unnecessary CSV files
     try:
         if os.name ==  "posix":
-                subprocess.call('./delete_files.sh')
+            subprocess.call('rm history*.csv')
+            subprocess.call('clear')
         else:
-            subprocess.call([BASE_PATH + r'\\delete_files.bat'])
+            subprocess.call('del history*.csv')
+            subprocess.call('cls')
+
+        subprocess.call('echo ALL FILES ASSEMBLED.')
+        
     except:
         print("An error was found during the deletion of unnecessary CSV files")
 
     return 0
 
-if __name__ == '__main__':
+
+def run():
+    intro_message()
     main()
+    return 0
+
+if __name__ == "__main__":
+    run()

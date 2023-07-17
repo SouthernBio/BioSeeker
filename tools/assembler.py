@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import numpy as np
-from GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
+from utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
 
 def assembler(directory: str, ORF: int):
     """Function that assembles individual dataframes with codon and codon pair conservation rates 
@@ -29,8 +29,8 @@ def assembler(directory: str, ORF: int):
         zeros1 = np.zeros(61)
         zeros2 = np.zeros(3721)
 
-        df_codons = pd.DataFrame({'reference' : zeros1, 'conservation' : zeros1}, index = codon_list)
-        df_bicodons = pd.DataFrame({'reference' : zeros2 , 'conservation' : zeros2}, index = codon_pairs_list)
+        df_codons = pd.DataFrame({'ReferenceCount' : zeros1, 'ConservationCount' : zeros1}, index = codon_list)
+        df_bicodons = pd.DataFrame({'ReferenceCount' : zeros2 , 'ConservationCount' : zeros2}, index = codon_pairs_list)
         
         contents = os.listdir(directory)
 

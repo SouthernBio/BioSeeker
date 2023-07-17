@@ -1,11 +1,9 @@
 /*.afa
 /history*.csv
 .vscode/launch.json
-__pycache__/assembler.cpython-310.pyc
-__pycache__/conservationrate.cpython-310.pyc
-__pycache__/assembler.cpython-39.pyc
-__pycache__/listfiles.cpython-310.pyc
-__pycache__/seqxtract.cpython-310.pyc
 bicodon*.csv
 codon*.csv
 donotpush
+__pycache__
+.vscode
+tools/analysis.py
