@@ -8,6 +8,9 @@ This project facilitates calculating codon and bicodon conservation rates for a 
 * [Wiki (in progress)](https://github.com/fx-biocoder/BioSeeker/wiki)
 * [Paper: Conservation of location of several specific inhibitory codon pairs in the Saccharomyces sensu stricto yeasts reveals translational selection (Ghoneim et al., 2019)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/)
 
+## IMPORTANT UPDATE!
+**As of July 19th 2023, this project will be part of SouthernBio. [Go to the new official repository](https://github.com/SouthernBio/BioSeeker). This repository will be archived.**
+
 ### 1. About the project
 
 This project started in 2021 as part of my thesis to obtain an engineering degree, but due to personal reasons I've decided to change my career path and the project was left abandoned. I think it would be beneficial for others to make use of my work, so I'm now releasing it as an open-source bioinformatics project licensed under GPL v3.0, everyone is welcome to participate in it. The inspiration for this project came from [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/), which I've tried to (partially) replicate using Drosophila's alignments from [FlyDIVaS](https://flydivas.info). Feel free to make as many additions as you'd like.
