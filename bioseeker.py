@@ -8,19 +8,22 @@ import tools.conservationrate as cr
 from tools.assembler import assembler
 from utils.intro import intro_message
 import os
-import subprocess
+import sh
+import sys
 
 
 def main():
     # Run virtual environment
+    sh.pipenv("install", _out=sys.stdout, _err=sys.stderr)
+
     try:
-        subprocess.call('pipenv install')
-        subprocess.call('pipenv shell')
-    except:
-        raise Exception('Virtual environment failed to activate. Aborting.')
-    
-    subprocess.run('echo BioSeeker status: ONLINE.', shell=True)
-    
+        sh.pipenv("shell", _out=sys.stdout, _err=sys.stderr)
+    except sh.ErrorReturnCode_1:
+        sh.echo("Virtual environment already active.", _out=sys.stdout, _err=sys.stderr)
+    except Exception:
+        raise Exception("Virtual environment failed to activate. Aborting..")
+    sh.echo('BioSeeker status: ONLINE.')
+
     #   Generating list of files on current working directory
     BASE_PATH = os.getcwd()
     files = lf.list_of_files(BASE_PATH)
@@ -36,7 +39,7 @@ def main():
             cr.calculations(sequences_array, indicated_index, 1)
             cr.calculations(sequences_array, indicated_index, 2)
             indicated_index += 1
-        except:
+        except Exception:
             print(f"An error was found during the analysis of {file}. It will be added to unreadable.txt")
             unreadable_files.append(file)
 
@@ -49,23 +52,23 @@ def main():
     textfile.close()
 
     #   Dataframe assembly
-    assembler(BASE_PATH, 0)   # ORF+0
-    assembler(BASE_PATH, 1)    # ORF+1
-    assembler(BASE_PATH, 2)    # ORF+2
+    assembler(BASE_PATH, 0)  # ORF+0
+    assembler(BASE_PATH, 1)  # ORF+1
+    assembler(BASE_PATH, 2)  # ORF+2
 
     #   Delete unnecessary CSV files
     try:
-        if os.name ==  "posix":
-            subprocess.call('rm history*.csv')
-            subprocess.call('clear')
+        # using os.system for file removal/terminal clearing as
+        # sh library does not support wildcard completion/terminal clearing
+        if os.name == "posix":
+            os.system("rm history_*.csv")
+            os.system("clear")
         else:
-            subprocess.call('del history*.csv')
-            subprocess.call('cls')
-
-        subprocess.call('echo ALL FILES ASSEMBLED.')
-        
-    except:
-        print("An error was found during the deletion of unnecessary CSV files")
+            os.system("del history_*.csv")
+            os.system("cls")
+        sh.echo('ALL FILES ASSEMBLED.', _out=sys.stdout, _err=sys.stderr)
+    except Exception as error:
+        print(f"An error was found during the deletion of unnecessary CSV files ({error})")
 
     return 0
 
