@@ -31,14 +31,11 @@ def main():
     # List of unreadable files that will be stored after the procedure is executed
     unreadable_files = []
 
-    indicated_index = 0
-    for file in files:
+    for indicated_index, file in enumerate(files):
         try:
             sequences_array = sq.extract_sequences(file)
-            cr.calculations(sequences_array, indicated_index, 0)
-            cr.calculations(sequences_array, indicated_index, 1)
-            cr.calculations(sequences_array, indicated_index, 2)
-            indicated_index += 1
+            for ORF in {0, 1, 2}:
+                cr.calculations(sequences_array, indicated_index, ORF)
         except Exception:
             print(f"An error was found during the analysis of {file}. It will be added to unreadable.txt")
             unreadable_files.append(file)
