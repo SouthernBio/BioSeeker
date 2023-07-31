@@ -7,3 +7,4 @@ donotpush
 __pycache__
 .vscode
 tools/analysis.py
+unreadable.txt

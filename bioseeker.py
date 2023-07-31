@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# Author: Facundo Martínez
-
 import tools.listfiles as lf
 import tools.seqxtract as sq
 import tools.conservationrate as cr
@@ -11,19 +9,7 @@ import os
 import sh
 import sys
 
-
 def main():
-    # Run virtual environment
-    sh.pipenv("install", _out=sys.stdout, _err=sys.stderr)
-
-    try:
-        sh.pipenv("shell", _out=sys.stdout, _err=sys.stderr)
-    except sh.ErrorReturnCode_1:
-        sh.echo("Virtual environment already active.", _out=sys.stdout, _err=sys.stderr)
-    except Exception:
-        raise Exception("Virtual environment failed to activate. Aborting..")
-    sh.echo('BioSeeker status: ONLINE.')
-
     #   Generating list of files on current working directory
     BASE_PATH = os.getcwd()
     files = lf.list_of_files(BASE_PATH)
@@ -36,7 +22,7 @@ def main():
             sequences_array = sq.extract_sequences(file)
             for ORF in {0, 1, 2}:
                 cr.calculations(sequences_array, indicated_index, ORF)
-        except Exception:
+        except:
             print(f"An error was found during the analysis of {file}. It will be added to unreadable.txt")
             unreadable_files.append(file)
 

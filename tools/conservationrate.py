@@ -18,9 +18,9 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
         pandas.DataFrame: codon pair dataframe
     """
     if ORF not in {0, 1 ,2}:
-        raise Exception("Error: 'ORF' can only take values in {0, 1, 2}")
+        raise ValueError("Error: 'ORF' can only take values in {0, 1, 2}")
 
-    codons = [] 
+    codons = []
     bicodons = []
     CODON_SIZE = 3
 
@@ -44,13 +44,13 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
     bicodon_reference = bicodons[0]
 
     #   Creating accessory lists to store the calculations
-    number_of_reference_codons = len(codon_reference) 
+    number_of_reference_codons = len(codon_reference)
     number_of_reference_bicodons = len(bicodon_reference)
 
-    codon_history = np.zeros(number_of_reference_codons, dtype="i") 
+    codon_history = np.zeros(number_of_reference_codons, dtype="i")
     bicodon_history = np.zeros(number_of_reference_bicodons, dtype="i")
 
-    reference_codon_history = np.zeros(61, dtype="i") 
+    reference_codon_history = np.zeros(61, dtype="i")
     reference_bicodon_history = np.zeros(3721, dtype="i")
 
     conserved_codon_history = np.zeros(number_of_reference_codons, dtype="i")
@@ -65,7 +65,7 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
         slicer = codons[:,count]
         for j in slicer:
             if j == i:
-                codon_history[count] += 1 
+                codon_history[count] += 1
 
     for count, i in enumerate(bicodon_reference, start = 0):
         slicer = bicodons[:,count]
@@ -86,9 +86,10 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
     for count, x in enumerate(bicodon_history, start = 0):
         if x/aux2 > 0.9:
             conserved_bicodon_history[count] += 1
-    
+
     print("Computation successful.")
-    print(f"Assembling conservartion matrix(cod_ref, hisc) for ORF+{ORF}...")
+    print(f"Assembling conservation matrix(cod_ref, hisc) for ORF+{ORF}...") # This part of the code is computationally expensive. We have to find a way to optimize it
+
 
     conservation_matrix_reference_codons = np.column_stack((np.asarray(codon_reference), np.asarray(conserved_codon_history)))
     conservation_matrix_reference_bicodons = np.column_stack((np.asarray(bicodon_reference), np.asarray(conserved_bicodon_history)))
@@ -115,18 +116,18 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
 
     codon_array = np.column_stack((list(CODON_TUPLE), reference_codon_history, codon_conservation))
     bicodon_array = np.column_stack((list(CODON_PAIRS_TUPLE), reference_bicodon_history, bicodon_conservation))
-    
+
     print(f"Assembly has been successful. Creating dataframes for ORF+{ORF}...")
 
     #   Creating dataframes and changing column names
     codon_dataframe = pd.DataFrame(codon_array)
     bicodon_dataframe = pd.DataFrame(bicodon_array)
 
-    codon_dataframe = codon_dataframe.rename(columns = {0:'codon', 1:'reference', 2:'conservation'})
-    bicodon_dataframe = bicodon_dataframe.rename(columns = {0:'bicodon', 1:'reference', 2:'conservation'})
+    codon_dataframe = codon_dataframe.rename(columns = {0:'codon', 1:'ReferenceCount', 2:'ConservationCount'})
+    bicodon_dataframe = bicodon_dataframe.rename(columns = {0:'codon_pair', 1:'ReferenceCount', 2:'ConservationCount'})
 
     #   Exporting dataframes to CSV files
-    dataframe_codons = codon_dataframe.to_csv("history_codons" + "_" + str(indicated_index) + "_" + str(ORF) + ".csv", index = False), 
+    dataframe_codons = codon_dataframe.to_csv("history_codons" + "_" + str(indicated_index) + "_" + str(ORF) + ".csv", index = False)
     dataframe_bicodons = bicodon_dataframe.to_csv("history_bicodons" + "_" + str(indicated_index) + "_" + str(ORF) + ".csv", index = False)
 
     return dataframe_codons, dataframe_bicodons
