@@ -4,8 +4,8 @@
 This project facilitates calculating codon and bicodon conservation rates for a given genus.
 
 ### Useful Links:
-* [Project backlog (in progress)](https://github.com/fx-biocoder/BioSeeker/projects)
-* [Wiki (in progress)](https://github.com/fx-biocoder/BioSeeker/wiki)
+* [Project backlog (in progress)](https://github.com/SouthernBio/BioSeeker/projects)
+* [Wiki (in progress)](https://github.com/SouthernBio/BioSeeker/wiki)
 * [Paper: Conservation of location of several specific inhibitory codon pairs in the Saccharomyces sensu stricto yeasts reveals translational selection (Ghoneim et al., 2019)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/)
 
 ### 1. About the project
@@ -39,13 +39,17 @@ Once you have installed Python and its package manager, you can proceed to insta
 ```bash
 $ pip3 install pipenv
 ```
-You don't need to manually activate the virtual environment. BioSeeker will automatically do it for you when you run the program.
+Then, you can activate the virtual environment and run BioSeeker:
+```bash
+$ pipenv shell
+$ bioseeker
+```
 
 ### 5. Additional details
 After parsing the files and calculating conservation rates, it will also generate a file called `unreadable.txt` which stores the names of MSA files that could not be parsed. Then, it will assemble all individual dataframes into 6 different dataframes that contain all the information across linked species.
 
-## 💙 Support me!
+## 💙 Support this
 
-Your contribution would help me a lot in improving the quality of this project and adding additional features. If you find this project useful and/or interesting, please consider supporting me on Github Sponsors, Ko-Fi or PayPal
+Your contribution would help SouthernBio in improving the quality of this project and adding additional features. If you find this project useful and/or interesting, please consider offering your support on Github Sponsors, Ko-Fi or PayPal
 
 [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/fx-biocoder) [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/biocoder) [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/facumartinez680)
