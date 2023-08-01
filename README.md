@@ -48,7 +48,7 @@ $ bioseeker
 ### 5. Additional details
 After parsing the files and calculating conservation rates, it will also generate a file called `unreadable.txt` which stores the names of MSA files that could not be parsed. Then, it will assemble all individual dataframes into 6 different dataframes that contain all the information across linked species.
 
-## 💙 Support this
+## 💙 Support this project
 
 Your contribution would help SouthernBio in improving the quality of this project and adding additional features. If you find this project useful and/or interesting, please consider offering your support on Github Sponsors, Ko-Fi or PayPal
 
