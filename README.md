@@ -21,7 +21,7 @@ In this repo you will find a Python script called `bioseeker.py`. It takes a fil
 Start by cloning the repository:
 
 ```bash
-$ git clone https://github.com/fx-biocoder/BioSeeker
+$ git clone https://github.com/SouthernBio/BioSeeker
 ```
 
 Copy and paste the MSA FASTA files on the directory where `bioseeker.py` is located. Then, you can just type `./bioseeker` in the terminal.
