@@ -3,8 +3,7 @@
 .vscode/launch.json
 bicodon*.csv
 codon*.csv
-donotpush
 __pycache__
 .vscode
-tools/analysis.py
 unreadable.txt
+dataframes/*

@@ -4,14 +4,14 @@ import tools.listfiles as lf
 import tools.seqxtract as sq
 import tools.conservationrate as cr
 from tools.assembler import assembler
+from tools.delete import delete_csv_files
 from utils.intro import intro_message
-import os
-import sh
-import sys
+from os import getcwd
 
 def main():
+    intro_message()
     #   Generating list of files on current working directory
-    BASE_PATH = os.getcwd()
+    BASE_PATH = getcwd()
     files = lf.list_of_files(BASE_PATH)
 
     # List of unreadable files that will be stored after the procedure is executed
@@ -35,31 +35,14 @@ def main():
     textfile.close()
 
     #   Dataframe assembly
-    assembler(BASE_PATH, 0)  # ORF+0
-    assembler(BASE_PATH, 1)  # ORF+1
-    assembler(BASE_PATH, 2)  # ORF+2
+    for ORF in {0, 1, 2}:
+        assembler(BASE_PATH, ORF)
 
     #   Delete unnecessary CSV files
-    try:
-        # using os.system for file removal/terminal clearing as
-        # sh library does not support wildcard completion/terminal clearing
-        if os.name == "posix":
-            os.system("rm history_*.csv")
-            os.system("clear")
-        else:
-            os.system("del history_*.csv")
-            os.system("cls")
-        sh.echo('ALL FILES ASSEMBLED.', _out=sys.stdout, _err=sys.stderr)
-    except Exception as error:
-        print(f"An error was found during the deletion of unnecessary CSV files ({error})")
+    delete_csv_files()
 
-    return 0
+    return
 
-
-def run():
-    intro_message()
-    main()
-    return 0
 
 if __name__ == "__main__":
-    run()
+    main()

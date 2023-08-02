@@ -24,7 +24,23 @@ Start by cloning the repository:
 $ git clone https://github.com/SouthernBio/BioSeeker
 ```
 
-Copy and paste the MSA FASTA files on the directory where `bioseeker.py` is located. Then, you can just type `./bioseeker` in the terminal.
+Copy and paste the MSA FASTA files on the directory where `bioseeker.py` is located. 
+
+Make sure that your Python interpreter is added to `PATH`. Then, you can activate the virtual environment and run BioSeeker.
+
+### Windows PowerShell:
+
+```bash
+$ pipenv shell
+$ ./bioseeker # or 'py -m bioseeker'
+```
+
+### GNU/Linux:
+
+```bash
+$ pipenv shell
+$ bioseeker # or 'python3 -m bioseeker"
+```
 
 If you want to test how the program works before using it on your data, you will find alignment files on `FASTA_files/`. 
 
@@ -39,14 +55,9 @@ Once you have installed Python and its package manager, you can proceed to insta
 ```bash
 $ pip3 install pipenv
 ```
-Then, you can activate the virtual environment and run BioSeeker:
-```bash
-$ pipenv shell
-$ bioseeker
-```
 
 ### 5. Additional details
-After parsing the files and calculating conservation rates, it will also generate a file called `unreadable.txt` which stores the names of MSA files that could not be parsed. Then, it will assemble all individual dataframes into 6 different dataframes that contain all the information across linked species.
+After parsing the files and calculating conservation rates, it will also generate a file called `unreadable.txt` which stores the names of MSA files that could not be parsed. Then, it will assemble all individual dataframes into 6 different dataframes that contain all the information across linked species. BioSeeker will automatically create a new directory called `dataframes/` which will contain all the new dataframes.
 
 ## 💙 Support this project
 
