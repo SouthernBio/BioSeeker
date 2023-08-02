@@ -9,7 +9,6 @@ class InvalidReadingFrame(Exception):
         super().__init__(message)
 
 
-
 def calculations(sequences_array: list, indicated_index: int, ORF: int):
     """Function to calculate codon and codon pair conservation rates
 
