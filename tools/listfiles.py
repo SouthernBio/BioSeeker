@@ -3,8 +3,7 @@ import os
 class AlignmentFilesMissing(Exception):
     """Custom exception for when BioSeeker cannot find any FASTA files in the current directory"""
     def __init__(self, message):
-        super()__init__(message)
-
+        super().__init__(message)
 
 
 def list_of_files(working_directory: str):
