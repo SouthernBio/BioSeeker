@@ -5,7 +5,7 @@ def intro_message():
     Returns:
         int: Generic return value
     """
-    print("BioSeeker v0.0.1")
+    print("BioSeeker v0.0.1-beta")
     print("Author: SouthernBio, Open Source Bioinformatics Collective from Argentina")
     print("Official repository: https://github.com/SouthernBio/BioSeeker")
     print("License: GNU General Public License v3.0, see LICENSE")

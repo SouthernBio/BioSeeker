@@ -1,5 +1,12 @@
 import os
 
+
+class NotAFastaFile(Exception):
+    """Custom exception for when extract_sequences() receives an invalid input"""
+    def __init__(self, message):
+        super().__init__(message)
+
+
 def extract_sequences(file: str):
     """Function to extract sequences from FASTA files
         This function takes as an argument a file from the list created with listfiles.py
@@ -16,8 +23,8 @@ def extract_sequences(file: str):
     """
     # Checking file extension
     if file.endswith('.afa') == False:
-        raise Exception('Error: invalid file extension, it must end with ".afa". Have you modified "listfiles.py"?')
-    
+        raise NotAFastaFile('Error: invalid file extension, it must end with ".afa". Have you modified "listfiles.py"?')
+
     try:
         # Creating auxiliary lists and variables
         text_list = []

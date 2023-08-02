@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import numpy as np
+from pathlib import Path
 from utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
 
 def assembler(directory: str, ORF: int):
@@ -47,8 +48,9 @@ def assembler(directory: str, ORF: int):
         df_bicodons["ConservationRate"] = df_bicodons["ConservationCount"] / df_bicodons["ReferenceCount"]
         
         # Saving the data
-        codon_data = df_codons.to_csv(f'codon_data_ORF+{ORF}.csv')
-        codon_pairs_data = df_bicodons.to_csv(f'bicodon_data_ORF+{ORF}.csv')
+        os.makedirs('dataframes', exist_ok=True)
+        codon_data = df_codons.to_csv(f'dataframes/codon_data_ORF+{ORF}.csv')
+        codon_pairs_data = df_bicodons.to_csv(f'dataframes/bicodon_data_ORF+{ORF}.csv')
 
         return codon_data, codon_pairs_data
     except:

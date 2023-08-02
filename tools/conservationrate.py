@@ -2,6 +2,14 @@ from utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
 import numpy as np 
 import pandas as pd 
 
+
+class InvalidReadingFrame(Exception):
+    """Custom exception for when a function receives a reading frame out of range"""
+    def __init__(self, message):
+        super().__init__(message)
+
+
+
 def calculations(sequences_array: list, indicated_index: int, ORF: int):
     """Function to calculate codon and codon pair conservation rates
 
@@ -11,14 +19,14 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
         ORF (int): Reading frame. Can only take values in {0, 1, 2}
 
     Raises:
-        Exception: invalid reading frame.
+        InvalidReadingFrame: invalid reading frame.
 
     Returns:
         pandas.DataFrame: codon dataframe
         pandas.DataFrame: codon pair dataframe
     """
     if ORF not in {0, 1 ,2}:
-        raise ValueError("Error: 'ORF' can only take values in {0, 1, 2}")
+        raise InvalidReadingFrame("Error: 'ORF' can only take values in {0, 1, 2}")
 
     codons = []
     bicodons = []
@@ -26,16 +34,16 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
 
     #   Using the obtained array in the previous function, we proceed to divide the sequences in fragments of 3 and 6 bases
     #   Groups of codons and bicodons are assembled with an "CODON_SIZE" step of 3 nucleotides
-    print(f"Creando array de codons y bicodons en el ORF+{ORF}...")
+    print(f"Creating codon and codon pair arrays at ORF+{ORF}...")
     for _,k in sequences_array:
-        for j in k:   
+        for j in k:
             codon = [j[i:i+CODON_SIZE] for i in range(ORF, len(j), CODON_SIZE)]
             bicodon = [j[i:i+2*CODON_SIZE] for i in range(ORF, len(j), CODON_SIZE)]
             codons.append(codon)
-            bicodons.append(bicodon)  
+            bicodons.append(bicodon)
 
     #   Converting to Numpy array
-    codons = np.asarray(codons) 
+    codons = np.asarray(codons)
     bicodons = np.asarray(bicodons) # Numpy: VisibleDeprecationWarning, dtype = object. Applying the suggested solution just breaks the code.
 
     #   Reference lists
@@ -117,7 +125,7 @@ def calculations(sequences_array: list, indicated_index: int, ORF: int):
     codon_array = np.column_stack((list(CODON_TUPLE), reference_codon_history, codon_conservation))
     bicodon_array = np.column_stack((list(CODON_PAIRS_TUPLE), reference_bicodon_history, bicodon_conservation))
 
-    print(f"Assembly has been successful. Creating dataframes for ORF+{ORF}...")
+    print(f"The assembly has been successful. Creating dataframes for ORF+{ORF}...")
 
     #   Creating dataframes and changing column names
     codon_dataframe = pd.DataFrame(codon_array)
