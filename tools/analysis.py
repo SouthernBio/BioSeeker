@@ -2,9 +2,11 @@ import pandas as pd
 from scipy.stats import zscore
 from fnmatch import fnmatch
 
+
 class NotADataframe(Exception):
     """Custom exception for when a function receives a file that is not a CSV dataframe"""
     message = "Error: the function must receive a dataframe in CSV format."
+
     def __init__(self):
         super().__init__(self.message)
 
@@ -13,12 +15,12 @@ def normalize_conservation_rate(file_path: str) -> pd.DataFrame:
     """Normalizes conservation rates by calculating the z-score for each observed conservation rate.
 
     Args:
-        file (pd.DataFrame): Pandas dataframe containing conservation rates
+        file_path (pd.DataFrame): Pandas dataframe containing conservation rates
 
     Returns:
         pd.DataFrame: Pandas dataframe with normalized conservation rates
     """
-    if fnmatch(file_path, '*.csv') == False:
+    if not fnmatch(file_path, '*.csv'):
         raise NotADataframe()
 
     dataframe = pd.read_csv(file_path, delimiter=',', header=0, index_col=0)
@@ -64,7 +66,7 @@ def split_codon_pairs(file_path: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Pandas dataframe with two new columns
     """
-    if fnmatch(file_path, '*.csv') == False:
+    if not fnmatch(file_path, '*.csv'):
         raise NotADataframe()
     
     dataframe = pd.read_csv(file_path, delimiter=',', header=0)
@@ -109,11 +111,11 @@ def expected_codon_pair_conservation_rate(file_path: str, codons: str) -> pd.Dat
     for index, item in enumerate(first_codon_cr):
         expected_product.append(first_codon_cr[index] * second_codon_cr[index])
 
-    ExpectedCodonPairConservationRate = pd.Series(expected_product, index=None)
-    df_expectedcr = pd.DataFrame({
-        'ExpectedCodonPairConservationRate': ExpectedCodonPairConservationRate
+    expectedCodonPairConservationRate = pd.Series(expected_product, index=None)
+    df_expected_conservation_rate = pd.DataFrame({
+        'ExpectedCodonPairConservationRate': expectedCodonPairConservationRate
     })
 
-    dataframe = dataframe.join(df_expectedcr)
+    dataframe = dataframe.join(df_expected_conservation_rate)
 
     return dataframe

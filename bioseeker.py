@@ -15,24 +15,11 @@ def main():
     files = lf.list_of_files(BASE_PATH)
 
     # List of unreadable files that will be stored after the procedure is executed
-    unreadable_files = []
 
     for indicated_index, file in enumerate(files):
-        try:
-            sequences_array = sq.extract_sequences(file)
-            for ORF in {0, 1, 2}:
-                cr.calculations(sequences_array, indicated_index, ORF)
-        except:
-            print(f"An error was found during the analysis of {file}. It will be added to unreadable.txt")
-            unreadable_files.append(file)
-
-    print("The analysis is over. The following files have been ommited:\n", unreadable_files)
-
-    #   Unreadable MSA files
-    textfile = open("unreadable.txt", "w")
-    for file in unreadable_files:
-        textfile.write(file + "\n")
-    textfile.close()
+        sequences_array = sq.extract_sequences(file)
+        for ORF in {0, 1, 2}:
+            cr.calculations(sequences_array, indicated_index, ORF)
 
     #   Dataframe assembly
     for ORF in {0, 1, 2}:

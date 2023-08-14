@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import numpy as np
 from pathlib import Path
-from utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
+from utils.GeneticCode import CODON_ARRAY, CODON_PAIRS_ARRAY
 
 def assembler(directory: str, ORF: int):
     """Function that assembles individual dataframes with codon and codon pair conservation rates 
@@ -24,8 +24,8 @@ def assembler(directory: str, ORF: int):
         raise Exception("Error. ORF must take values in {0,1,2}, but " + str(ORF) + " was given.")
 
     try:
-        codon_list = list(CODON_TUPLE)
-        codon_pairs_list = list(CODON_PAIRS_TUPLE)
+        codon_list = list(CODON_ARRAY)
+        codon_pairs_list = list(CODON_PAIRS_ARRAY)
 
         zeros1 = np.zeros(61)
         zeros2 = np.zeros(3721)
