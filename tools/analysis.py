@@ -34,30 +34,6 @@ def normalize_conservation_rate(file_path: str) -> pd.DataFrame:
     return dataframe
 
 
-# ----------------------------------------------------------------
-# This might be deleted later on...
-"""
-def clean_data(file_path: str) -> pd.DataFrame:
-
-    if fnmatch(file_path, '*.csv') == False:
-        raise NotADataframe()
-    
-    dataframe = pd.read_csv(file_path, delimiter=',', header=0)
-
-    # Replace column name
-    if fnmatch(file_path, '*bicodon*'):
-        dataframe.columns = dataframe.columns.str.replace('Unnamed: 0', 'CodonPair')
-    else:
-        dataframe.columns = dataframe.columns.str.replace('Unnamed: 0', 'Codon')
-
-    # Remove rows with reference counts of zero
-    corrected_dataframe = dataframe.loc[dataframe['ReferenceCount'] > 0]
-
-    return dataframe
-"""
-# ----------------------------------------------------------------
-
-
 def split_codon_pairs(file_path: str) -> pd.DataFrame:
     """Generate two columns with each constituent codon from a codon pair
 
