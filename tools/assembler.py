@@ -2,15 +2,16 @@ import pandas as pd
 import os
 import numpy as np
 from pathlib import Path
-from utils.GeneticCode import CODON_ARRAY, CODON_PAIRS_ARRAY
+from utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
 
-def assembler(directory: str, ORF: int):
+
+def assembler(directory: str, orf: int):
     """Function that assembles individual dataframes with codon and codon pair conservation rates 
        (from a specific reading frame) into a single Pandas dataframe
 
     Args:
         directory (str): The directory where the gene-specific dataframes are located at
-        ORF (int): Reading frame. It can be ORF+0, ORF+1 or ORF+2
+        orf (int): Reading frame. It can be ORF+0, ORF+1 or ORF+2
 
     Raises:
         Exception: Invalid reading frame passed as parameter
@@ -20,12 +21,12 @@ def assembler(directory: str, ORF: int):
         pandas.DataFrame: dataframe with reference and conservation counts for every codon across all species
         pandas.DataFrame: dataframe with reference and conservation counts for every codon pair across all species
     """
-    if ORF not in {0,1,2}:
-        raise Exception("Error. ORF must take values in {0,1,2}, but " + str(ORF) + " was given.")
+    if orf not in {0, 1, 2}:
+        raise Exception("Error. ORF must take values in {0,1,2}, but " + str(orf) + " was given.")
 
     try:
-        codon_list = list(CODON_ARRAY)
-        codon_pairs_list = list(CODON_PAIRS_ARRAY)
+        codon_list = list(CODON_TUPLE)
+        codon_pairs_list = list(CODON_PAIRS_TUPLE)
 
         zeros1 = np.zeros(61)
         zeros2 = np.zeros(3721)
@@ -36,10 +37,10 @@ def assembler(directory: str, ORF: int):
         contents = os.listdir(directory)
 
         for file in contents:
-            if os.path.isfile(os.path.join(directory, file)) and file.startswith("history_codons") and file.endswith(f'{ORF}.csv'):
+            if os.path.isfile(os.path.join(directory, file)) and file.startswith("history_codons") and file.endswith(f'{orf}.csv'):
                 dataframe = pd.read_csv(file, header = 0, index_col = 0)
                 df_codons = df_codons + dataframe
-            elif os.path.isfile(os.path.join(directory, file)) and file.startswith("history_bicodons") and file.endswith(f'{ORF}.csv'):
+            elif os.path.isfile(os.path.join(directory, file)) and file.startswith("history_bicodons") and file.endswith(f'{orf}.csv'):
                 dataframe = pd.read_csv(file, header = 0, index_col = 0)
                 df_bicodons = df_bicodons + dataframe
 
@@ -49,10 +50,10 @@ def assembler(directory: str, ORF: int):
         
         # Saving the data
         os.makedirs('dataframes', exist_ok=True)
-        codon_data = df_codons.to_csv(f'dataframes/codon_data_ORF+{ORF}.csv')
-        codon_pairs_data = df_bicodons.to_csv(f'dataframes/bicodon_data_ORF+{ORF}.csv')
+        codon_data = df_codons.to_csv(f'dataframes/codon_data_ORF+{orf}.csv')
+        codon_pairs_data = df_bicodons.to_csv(f'dataframes/bicodon_data_ORF+{orf}.csv')
 
         return codon_data, codon_pairs_data
     except:
-        print(f"An unknown error occurred while assembling the dataframes from ORF+{ORF}")
+        print(f"An unknown error occurred while assembling the dataframes from ORF+{orf}")
         return None, None
