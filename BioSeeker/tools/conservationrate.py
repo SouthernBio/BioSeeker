@@ -145,7 +145,6 @@ def calculations(sequences_array: list, indicated_index: int, reading_frame: int
     2. Establecer cuál es la referencia de codones y pares de codones (como codons[0])
     3. Calcular el largo de la lista de codones de referencia (len(codon_reference))
     3.1. Guardarlo en un atributo de clase?
-     
     """
     #   Creating accessory lists to store the calculations
     number_of_reference_codons = len(codon_reference)

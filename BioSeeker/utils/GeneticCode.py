@@ -1,3 +1,15 @@
+"""
+GeneticCode.py
+
+This file contains codons and codon pairs that correspond to the peptides that are present after a successful mRNA
+translation. You might notice that CODON_TUPLE does not contain stop codons, and that is because these codons do not
+have a correspondent peptide.
+
+For the sake of simplicity, the codons have thymine instead of uracil. As of March 2024, BioSeeker does not support
+analysis using RNA sequences; because of that, FASTA files must contain DNA sequences. RNA compatibility might be added
+in a future release.
+"""
+
 CODON_TUPLE = ('TTG', 'GGC', 'CCG', 'CAG', 'TCT', 'TGG', 'GCG', 'GCT', 'CTT', 'GGT', 'GGA', 'GTA', 'ATT', 'GAT', 'AAC',
                'AAT', 'ATC', 'GAG', 'TAT', 'ACC', 'AGA', 'GAA', 'ACT', 'ATG', 'TTA', 'CGA', 'GTG', 'GCC', 'ATA', 'AAG',
                'ACA', 'CTG', 'CCT', 'TGT', 'CTA', 'TTC', 'AGC', 'CCA', 'TTT', 'TAC', 'AAA', 'GAC', 'GTT', 'TCA', 'CAT',
