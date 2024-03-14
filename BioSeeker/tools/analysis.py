@@ -1,14 +1,7 @@
 import pandas as pd
 from scipy.stats import zscore
 from fnmatch import fnmatch
-
-
-class NotADataframe(Exception):
-    """Custom exception for when a function receives a file that is not a CSV dataframe"""
-    message = "Error: the function must receive a dataframe in CSV format."
-
-    def __init__(self):
-        super().__init__(self.message)
+from BioSeeker.core import BioSeekerExceptions
 
 
 def normalize_conservation_rate(file_path: str) -> pd.DataFrame:
@@ -21,7 +14,7 @@ def normalize_conservation_rate(file_path: str) -> pd.DataFrame:
         pd.DataFrame: Pandas dataframe with normalized conservation rates
     """
     if not fnmatch(file_path, '*.csv'):
-        raise NotADataframe()
+        raise BioSeekerExceptions.NotADataframe()
 
     dataframe = pd.read_csv(file_path, delimiter=',', header=0, index_col=0)
     
@@ -38,12 +31,14 @@ def split_codon_pairs(file_path: str) -> pd.DataFrame:
     """Generate two columns with each constituent codon from a codon pair
 
     Args:
-        file_path (str): File which contains relevant 
+        file_path (str): File which contains relevant
+    Raises:
+         NotADataframe: file_path does not correspond to a dataframe file
     Returns:
         pd.DataFrame: Pandas dataframe with two new columns
     """
     if not fnmatch(file_path, '*.csv'):
-        raise NotADataframe()
+        raise BioSeekerExceptions.NotADataframe()
     
     dataframe = pd.read_csv(file_path, delimiter=',', header=0)
 
@@ -95,3 +90,6 @@ def expected_codon_pair_conservation_rate(file_path: str, codons: str) -> pd.Dat
     dataframe = dataframe.join(df_expected_conservation_rate)
 
     return dataframe
+
+
+df = normalize_conservation_rate('codon_data_ORF+0.csv')

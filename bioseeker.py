@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import tools.listfiles as lf
-import tools.seqxtract as sq
-import tools.conservationrate as cr
-from tools.assembler import assembler
-from tools.delete import delete_csv_files
-from utils.intro import intro_message
 from os import getcwd
+import BioSeeker.tools.listfiles as lf
+from BioSeeker.tools import seqxtract as sq, conservationrate as cr
+from BioSeeker.tools.assembler import assembler
+from BioSeeker.tools.delete import delete_csv_files
+from BioSeeker.utils.intro import intro_message
+
 
 def main():
     intro_message()
@@ -18,12 +18,12 @@ def main():
 
     for indicated_index, file in enumerate(files):
         sequences_array = sq.extract_sequences(file)
-        for ORF in {0, 1, 2}:
-            cr.calculations(sequences_array, indicated_index, ORF)
+        for reading_frame in {0, 1, 2}:
+            cr.calculations(sequences_array, indicated_index, reading_frame)
 
     #   Dataframe assembly
-    for ORF in {0, 1, 2}:
-        assembler(BASE_PATH, ORF)
+    for reading_frame in {0, 1, 2}:
+        assembler(BASE_PATH, reading_frame)
 
     #   Delete unnecessary CSV files
     delete_csv_files()

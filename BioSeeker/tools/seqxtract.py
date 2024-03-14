@@ -1,10 +1,5 @@
 import os
-
-
-class NotAFastaFile(Exception):
-    """Custom exception for when extract_sequences() receives an invalid input"""
-    def __init__(self, message):
-        super().__init__(message)
+from BioSeeker.core import BioSeekerExceptions
 
 
 def extract_sequences(file: str):
@@ -15,21 +10,21 @@ def extract_sequences(file: str):
         file (str): file that contains sequences to be sorted
 
     Raises:
-        Exception: Invalid file extension. The function only runs with FASTA files.
+        NotAFastaFile: Invalid file extension. The function only runs with FASTA files.
         Exception: Unexpected error encountered when reading the file
 
     Returns:
-        Array: two dimensional array of strings representing the species names and the aligned sequences.
+        Array: two-dimensional array of strings representing the species names and the aligned sequences.
     """
     # Checking file extension
-    if file.endswith('.afa') == False:
-        raise NotAFastaFile('Error: invalid file extension, it must end with ".afa". Have you modified "listfiles.py"?')
+    if not file.endswith('.afa'):
+        raise BioSeekerExceptions.NotAFastaFile()
 
     try:
         # Creating auxiliary lists and variables
         text_list = []
-        arrX = []
-        arrY = []
+        arr_x = []
+        arr_y = []
         auxvar = True
 
         #   Storing every line of the file at "text_list"
@@ -41,25 +36,25 @@ def extract_sequences(file: str):
             text_list.append(line_list)
         print(f"Extraction from file {file} has been successful.")
 
-        #   Sorting líneas through the boolean "auxvar"
+        #   Sorting línes through the boolean "auxvar"
         #   This boolean acts as some sort of switch, and sends every line to one list or another
-        #   The species will go to arrX and the sequence goes to arrY
+        #   The species will go to arr_x and the sequence goes to arr_y
         print("Creating alignment array...")
         for k in text_list:
-            if auxvar == True:
-                arrX.append(k)
-                auxvar = False    
+            if auxvar:
+                arr_x.append(k)
+                auxvar = False
             else:
-                arrY.append(k)
+                arr_y.append(k)
                 auxvar = True
 
         #   Creating array from the previous lists
-        arrXY = []
-        for i in range(len(arrX)):
-            arrXY.append([arrX[i], arrY[i]])
+        arr_xy = []
+        for i in range(len(arr_x)):
+            arr_xy.append([arr_x[i], arr_y[i]])
         print(f"The creation of the array from file {file} has been successful.")
         
-        return arrXY
-    except:
+        return arr_xy
+    except Exception:
         print(f"The creation of the array from file {file} was not successful.")
         return None
