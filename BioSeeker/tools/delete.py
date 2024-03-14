@@ -1,7 +1,7 @@
 from os import system, name
 
 
-def delete_csv_files():
+def delete_csv_files() -> None:
     """Deletes unnecessary CSV files from the current working directory"""
     if name == 'posix':
         system('rm history_*.csv')
@@ -12,4 +12,4 @@ def delete_csv_files():
 
     system('echo ALL FILES ASSEMBLED.')
 
-    return
+    return None

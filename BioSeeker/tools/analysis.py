@@ -82,9 +82,9 @@ def expected_codon_pair_conservation_rate(file_path: str, codons: str) -> pd.Dat
     for index, item in enumerate(first_codon_cr):
         expected_product.append(first_codon_cr[index] * second_codon_cr[index])
 
-    expectedCodonPairConservationRate = pd.Series(expected_product, index=None)
+    exp_codon_pair_conservation_rate = pd.Series(expected_product, index=None)
     df_expected_conservation_rate = pd.DataFrame({
-        'ExpectedCodonPairConservationRate': expectedCodonPairConservationRate
+        'ExpectedCodonPairConservationRate': exp_codon_pair_conservation_rate
     })
 
     dataframe = dataframe.join(df_expected_conservation_rate)
