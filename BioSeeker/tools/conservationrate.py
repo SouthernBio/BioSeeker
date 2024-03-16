@@ -43,7 +43,7 @@ class ConservationRateCalculator:
         self.codon_conservation = np.zeros(61, dtype="i")
         self.codon_pair_conservation = np.zeros(3721, dtype="i")
 
-    def __create_arrays(self, sequences_array: list, reading_frame: int):
+    def __create_arrays(self, sequences_array: list, reading_frame: int) -> None:
         if reading_frame not in {0, 1, 2}:
             raise BioSeekerExceptions.InvalidReadingFrame()
         else:
@@ -65,26 +65,47 @@ class ConservationRateCalculator:
 
         return codon_reference, codon_pairs_reference
 
-    def __compute_reference(self, reference, is_codon: bool):
+    def __compute_reference(self, reference, codons_or_pairs) -> np.ndarray:
+        """
+        Method for computing reference sequence values. IMPORTANT: the output of this function must be added to
+        self.codon_history or self.codon_pair_history depending on the context.
+
+        Args:
+            reference (list): genetic sequence of reference
+            codons_or_pairs (list): an alias for self.codons or self.codon_pairs
+
+        Returns:
+            history (np.ndarray): an array with the presence history of each codon (or codon pair) from the reference
+            sequence.
+        """
+        history = np.zeros(len(reference), dtype='i')
         for count, i in enumerate(reference, start=0):
-            match is_codon:
-                case True:
-                    self.codon_history = np.zeros(len(reference), dtype='i')
-                    slicer = self.codons[:, count]
-                    for j in slicer:
-                        if j == i:
-                            self.codon_history[count] += 1
-                case False:
-                    self.codon_pair_history = np.zeros(len(reference), dtype='i')
-                    slicer = self.codon_pairs[:, count]
-                    for k in slicer:
-                        if k == i:  # Changed from 'j' to 'k', see if it works
-                            self.codon_pair_history[count] += 1
+            slicer = codons_or_pairs[:, count]
+            for j in slicer:
+                if j == i:
+                    history[count] += 1
+
+        return history
+
+    def __compute_conservation(self, codons_or_pairs: list, history: list, conserved_history: list) -> None:
+        """
+        Method for computing conservation history
+
+        Args:
+            codons_or_pairs (list): an alias for self.codons or self.codon_pairs
+            history (list): an alias for self.codon_history or self_codon_pair_history
+            conserved_history (list): an alias for self.conserved_codon_history or conserved_codon_pair_history
+
+        Returns:
+            None
+        """
+        aux = len(codons_or_pairs[:, 0])
+        for count, x in enumerate(history, start=0):
+            if x / aux > 0.9:
+                conserved_history[count] += 1
 
         return None
 
-    def __compute_conservation(self):
-        pass
 
     def __fill_columns(self):
         pass
@@ -176,6 +197,8 @@ def calculations(sequences_array: list, indicated_index: int, reading_frame: int
             if j == i:
                 bicodon_history[count] += 1
 
+
+
     print("Computation successful.")
     print(f"Computing conservation history at reading+{reading_frame}...")
 
@@ -189,6 +212,8 @@ def calculations(sequences_array: list, indicated_index: int, reading_frame: int
     for count, x in enumerate(bicodon_history, start=0):
         if x/aux2 > 0.9:
             conserved_bicodon_history[count] += 1
+
+    # HASTA ACÁ FUE REFACTORIZADO. SEGUIR CON LO QUE ESTÁ DESPUÉS DE ESTO...
 
     print("Computation successful.")
     # This part of the code is computationally expensive. We have to find a way to optimize it
