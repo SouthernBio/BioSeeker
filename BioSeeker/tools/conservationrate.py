@@ -9,26 +9,20 @@ class ConservationRateCalculator:
     Fill this up.
     """
     reading_frame: int                          # {0, 1, 2}
-
     codons: list                                # Codons present in each genetic sequence
     codon_pairs: list                           # Codon pairs present in each genetic sequence
     codon_size: int                             # This attribute is created to avoid using a hardcoded value of 3
-    sequences_array: list  #
-
+    sequences_array: list
     number_of_reference_codons: int             # len(codon_reference)
     number_of_reference_codon_pairs: int        # len(codon_pairs_reference)
-
     codon_history: np.ndarray                   # np.zeros(number_of_reference_codons)
     conserved_codon_history: np.ndarray         # np.zeros(number_of_reference_codons)
-
     codon_pair_history: np.ndarray              # np.zeros(number_of_reference_codon_pairs)
     conserved_codon_pair_history: np.ndarray    # np.zeros(number_of_reference_codon_pairs)
-
+    codon_reference: np.ndarray                 # Genetic sequence used as reference for codons
     codon_pair_reference: np.ndarray            # Genetic sequence used as reference for codon pairs
-
     reference_codon_history: np.ndarray         # How many times a codon is present in a reference sequence
     reference_codon_pair_history: np.ndarray    # How many times a codon pair is present in a reference sequence
-
     codon_conservation: np.ndarray              # How many times said codon has been preserved
     codon_pair_conservation: np.ndarray         # How many times said codon pair has been preserved
 
@@ -58,14 +52,14 @@ class ConservationRateCalculator:
 
         return None
 
-    def __establish_references(self):
+    def __establish_references(self) -> None:
         # Numpy: VisibleDeprecationWarning, data type = object.
         codons, codon_pairs = np.asarray(self.codons), np.asarray(self.codon_pairs)
-        codon_reference, codon_pairs_reference = codons[0], codon_pairs[0]
+        self.codon_reference, self.codon_pairs_reference = codons[0], codon_pairs[0]
 
-        return codon_reference, codon_pairs_reference
+        return None
 
-    def __compute_reference(self, reference, codons_or_pairs) -> np.ndarray:
+    def __compute_reference(self, reference: np.ndarray, codons_or_pairs) -> np.ndarray:
         """
         Method for computing reference sequence values. IMPORTANT: the output of this function must be added to
         self.codon_history or self.codon_pair_history depending on the context.
@@ -87,14 +81,14 @@ class ConservationRateCalculator:
 
         return history
 
-    def __compute_conservation(self, codons_or_pairs: list, history: list, conserved_history: list) -> None:
+    def __compute_conservation(self, codons_or_pairs: list, history: np.ndarray, conserved_history: np.ndarray) -> None:
         """
         Method for computing conservation history
 
         Args:
             codons_or_pairs (list): an alias for self.codons or self.codon_pairs
-            history (list): an alias for self.codon_history or self_codon_pair_history
-            conserved_history (list): an alias for self.conserved_codon_history or conserved_codon_pair_history
+            history (list): an alias for self.codon_history or self.codon_pair_history
+            conserved_history (list): an alias for self.conserved_codon_history or self.conserved_codon_pair_history
 
         Returns:
             None
@@ -106,14 +100,90 @@ class ConservationRateCalculator:
 
         return None
 
+    def __fill_columns(self,
+                       reference: np.ndarray,
+                       history: np.ndarray,
+                       m_tuple: tuple,
+                       conservation_array: np.ndarray,
+                       reference_history: np.ndarray) -> None:
+        """
+        Method for filling the conservation matrix reference columns for codons and codon pairs
 
-    def __fill_columns(self):
-        pass
+        Args:
+            reference: an alias for self.codon_reference or self.codon_pair_reference
+            history: an alias for self.conserved_codon_history or self.conserved_codon_pair_history
+            m_tuple (tuple): these tuples are CODON_TUPLE and CODON_PAIR_TUPLE from GeneticCode.py
+            conservation_array: an alias for self.codon_conservation and self.codon_pair_conservation
+            reference_history: an alias for self.reference_codon_history or self.reference_codon_pair_history
 
-    def __create_dataframes(self):
-        pass
+        Returns:
+            None
+        """
+        conservation_matrix_reference = np.column_stack((np.asarray(reference), np.asarray(history)))
 
-    def calculate_rate(self):
+        for count, x in enumerate(m_tuple, start=0):
+            for i in conservation_matrix_reference:
+                if (i[1] != '0') and (i[0] == x):
+                    conservation_array[count] += 1
+            for j in reference:
+                if x == j:
+                    reference_history[count] += 1
+
+        return None
+
+    def __create_dataframes(self,
+                            m_tuple: tuple,
+                            reference_array: np.ndarray,
+                            conservation_array: np.ndarray,
+                            is_codon: bool,
+                            index: int,
+                            reading_frame: int):
+        """
+        Method to generate the final dataframes to perform the statistical analysis
+
+        Args:
+            m_tuple (tuple): these tuples are CODON_TUPLE and CODON_PAIR_TUPLE from GeneticCode.py
+        """
+        m_array = np.column_stack((list(m_tuple), reference_array, conservation_array))
+
+        dataframe = pd.DataFrame(m_array)
+        match is_codon:
+            case True:
+                dataframe = dataframe.rename(columns={0: 'codon', 1: 'ReferenceCount', 2: 'ConservationCount'})
+                dataframe.to_csv(f"history_codons_{str(index)}_{str(reading_frame)}.csv", index=False)
+            case False:
+                dataframe = dataframe.rename(columns={0: 'codon_pair', 1: 'ReferenceCount', 2: 'ConservationCount'})
+                dataframe.to_csv(f"history_codon_pairs_{str(index)}_{str(reading_frame)}.csv", index=False)
+
+        return None
+
+    def calculate_rate(self, sequences_array: list, indicated_index: int, reading_frame: int):
+        """
+        Fill this up
+        """
+        self.__create_arrays(sequences_array, reading_frame)
+        self.__establish_references()
+
+        self.codon_history = self.__compute_reference(self.codon_reference, self.codons)
+        self.codon_pair_history = self.__compute_reference(self.codon_pair_reference, self.codon_pairs)
+
+        self.__compute_conservation(self.codons, self.codon_history, self.conserved_codon_history)
+        self.__compute_conservation(self.codon_pairs, self.codon_pair_history, self.conserved_codon_pair_history)
+
+        # For codons
+        self.__fill_columns(self.codon_reference,
+                            self.conserved_codon_history,
+                            CODON_TUPLE,
+                            self.codon_conservation,
+                            self.reference_codon_history)
+
+        # For codon pairs
+        self.__fill_columns(self.codon_pair_reference,
+                            self.conserved_codon_pair_history,
+                            CODON_PAIRS_TUPLE,
+                            self.codon_pair_conservation,
+                            self.reference_codon_pair_history)
+
         pass
 
     def parse_info(self):
@@ -197,8 +267,6 @@ def calculations(sequences_array: list, indicated_index: int, reading_frame: int
             if j == i:
                 bicodon_history[count] += 1
 
-
-
     print("Computation successful.")
     print(f"Computing conservation history at reading+{reading_frame}...")
 
@@ -212,8 +280,6 @@ def calculations(sequences_array: list, indicated_index: int, reading_frame: int
     for count, x in enumerate(bicodon_history, start=0):
         if x/aux2 > 0.9:
             conserved_bicodon_history[count] += 1
-
-    # HASTA ACÁ FUE REFACTORIZADO. SEGUIR CON LO QUE ESTÁ DESPUÉS DE ESTO...
 
     print("Computation successful.")
     # This part of the code is computationally expensive. We have to find a way to optimize it
@@ -243,6 +309,8 @@ def calculations(sequences_array: list, indicated_index: int, reading_frame: int
         for i in bicodon_reference:
             if bicod == i:
                 reference_bicodon_history[count] += 1
+
+    # HASTA ACÁ FUE REFACTORIZADO. SEGUIR CON LO QUE ESTÁ DESPUÉS DE ESTO...
 
     codon_array = np.column_stack((list(CODON_TUPLE), reference_codon_history, codon_conservation))
     bicodon_array = np.column_stack((list(CODON_PAIRS_TUPLE), reference_bicodon_history, bicodon_conservation))
