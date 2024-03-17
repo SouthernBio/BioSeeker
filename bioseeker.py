@@ -2,7 +2,7 @@
 
 from os import getcwd
 import BioSeeker.tools.listfiles as lf
-from BioSeeker.tools import seqxtract as sq, conservationrate as cr
+from BioSeeker.tools import seqxtract as sq, parser as cr
 from BioSeeker.tools.assembler import assembler
 from BioSeeker.tools.delete import delete_csv_files
 from BioSeeker.utils.intro import intro_message

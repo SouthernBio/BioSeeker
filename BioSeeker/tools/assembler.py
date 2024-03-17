@@ -3,57 +3,78 @@ import os
 import numpy as np
 from fnmatch import fnmatch
 from BioSeeker.utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
+from BioSeeker.core.BioSeekerExceptions import InvalidReadingFrame
 
 
-def assembler(directory: str, reading_frame: int):
-    """Function that assembles individual dataframes with codon and codon pair conservation rates 
-       (from a specific reading frame) into a single Pandas dataframe
+class ConservationRateCalculator:
+    directory: str
+    contents: list[str]
+    reading_frame: int
+    components: int
+    dataframe_index: list
+    assembling_codons: bool
+    df: pd.DataFrame
 
-    Args:
-        directory (str): The directory where the gene-specific dataframes are located at
-        reading_frame (int): Reading frame. It can be ORF+0, ORF+1 or ORF+2
+    def __init__(self, _directory: str, _reading_frame: int, _components: int, is_codon: bool = True):
+        if _reading_frame not in {0, 1, 2}:
+            raise InvalidReadingFrame()
+        self.directory = _directory
+        self.contents = os.listdir(_directory)
+        self.reading_frame = _reading_frame
+        self.components = _components
+        if is_codon:
+            self.dataframe_index = list(CODON_TUPLE)
+        else:
+            self.dataframe_index = list(CODON_PAIRS_TUPLE)
+            self.assembling_codons = False
 
-    Raises:
-        Exception: Invalid reading frame passed as parameter
-        Exception: Error occurred during dataframe assembly 
+    def __prepare(self):
+        dataframe = pd.DataFrame({'ReferenceCount': np.zeros(self.components),
+                                  'ConservationCount': np.zeros(self.components)
+                                  }, index=self.dataframe_index)
 
-    Returns:
-        pandas.DataFrame: dataframe with reference and conservation counts for every codon across all species
-        pandas.DataFrame: dataframe with reference and conservation counts for every codon pair across all species
-    """
-    if reading_frame not in {0, 1, 2}:
-        raise Exception("Error. ORF must take values in {0,1,2}, but " + str(reading_frame) + " was given.")
+        for file in self.contents:
+            match self.assembling_codons:
+                case True:
+                    if os.path.isfile(os.path.join(self.directory, file) and fnmatch(file, f'history_codons*{self.reading_frame}')):
+                        df = pd.read_csv(file, header=0, index_col=0)
+                        dataframe = dataframe + df
+                case False:
+                    if os.path.isfile(os.path.join(self.directory, file) and fnmatch(file, f'history_codon_p*{self.reading_frame}')):
+                        df = pd.read_csv(file, header=0, index_col=0)
+                        dataframe = dataframe + df
 
-    try:
-        codon_list = list(CODON_TUPLE)
-        codon_pairs_list = list(CODON_PAIRS_TUPLE)
+        self.df = dataframe
 
-        zeros1 = np.zeros(61)
-        zeros2 = np.zeros(3721)
+        return None
 
-        df_codons = pd.DataFrame({'ReferenceCount': zeros1, 'ConservationCount': zeros1}, index=codon_list)
-        df_bicodons = pd.DataFrame({'ReferenceCount': zeros2, 'ConservationCount': zeros2}, index=codon_pairs_list)
-        
-        contents = os.listdir(directory)
+    def calculator(self, reading_frame: int, is_codon: bool = True) -> None:
+        """
+        Assemble individual gene dataframes into one sign
 
-        for file in contents:
-            if os.path.isfile(os.path.join(directory, file)) and fnmatch(file, f'history_codons*{reading_frame}'):
-                dataframe = pd.read_csv(file, header=0, index_col=0)
-                df_codons = df_codons + dataframe
-            elif os.path.isfile(os.path.join(directory, file)) and fnmatch(file, f"history_bicodons*{reading_frame}"):
-                dataframe = pd.read_csv(file, header=0, index_col=0)
-                df_bicodons = df_bicodons + dataframe
+        Args:
+            reading_frame (int): the reading frame from which codons or codon pairs are established
+            is_codon (bool): determines whether the program is working with individual codons or codon pairs
 
-        # Calculate conservation rates
-        df_codons["ConservationRate"] = df_codons["ConservationCount"] / df_codons["ReferenceCount"]
-        df_bicodons["ConservationRate"] = df_bicodons["ConservationCount"] / df_bicodons["ReferenceCount"]
-        
-        # Saving the data
+        Raises:
+            InvalidReadingFrame: the provided reading frame was out of range.
+
+        Returns:
+            None
+        """
+
+        if reading_frame not in {0, 1, 2}:
+            raise InvalidReadingFrame()
+
+        # Calculate conservation rate
+        self.df["ConservationRate"] = self.df["ConservationCount"] / self.df["ReferenceCount"]
+
+        # Save the file
         os.makedirs('dataframes', exist_ok=True)
-        codon_data = df_codons.to_csv(f'dataframes/codon_data_ORF+{reading_frame}.csv')
-        codon_pairs_data = df_bicodons.to_csv(f'dataframes/bicodon_data_ORF+{reading_frame}.csv')
+        match is_codon:
+            case True:
+                self.df.to_csv(f'dataframes/codon_data_ORF+{reading_frame}.csv')
+            case False:
+                self.df.to_csv(f'dataframes/codon_pairs_data_ORF+{reading_frame}.csv')
 
-        return codon_data, codon_pairs_data
-    except:
-        print(f"An unknown error occurred while assembling the dataframes from ORF+{reading_frame}")
-        return None, None
+        return None

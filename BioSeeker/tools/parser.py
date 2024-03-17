@@ -4,7 +4,7 @@ from BioSeeker.utils.GeneticCode import CODON_TUPLE, CODON_PAIRS_TUPLE
 from BioSeeker.core import BioSeekerExceptions
 
 
-class ConservationRateCalculator:
+class FASTAParser:
     """
     Fill this up.
     """
@@ -59,6 +59,7 @@ class ConservationRateCalculator:
 
         return None
 
+    # noinspection PyMethodMayBeStatic
     def __compute_reference(self, reference: np.ndarray, codons_or_pairs) -> np.ndarray:
         """
         Method for computing reference sequence values. IMPORTANT: the output of this function must be added to
@@ -81,6 +82,7 @@ class ConservationRateCalculator:
 
         return history
 
+    # noinspection PyMethodMayBeStatic
     def __compute_conservation(self, codons_or_pairs: list, history: np.ndarray, conserved_history: np.ndarray) -> None:
         """
         Method for computing conservation history
@@ -100,6 +102,7 @@ class ConservationRateCalculator:
 
         return None
 
+    # noinspection PyMethodMayBeStatic
     def __fill_columns(self,
                        reference: np.ndarray,
                        history: np.ndarray,
@@ -131,6 +134,7 @@ class ConservationRateCalculator:
 
         return None
 
+    # noinspection PyMethodMayBeStatic
     def __create_dataframes(self,
                             m_tuple: tuple,
                             reference_array: np.ndarray,
@@ -143,7 +147,16 @@ class ConservationRateCalculator:
 
         Args:
             m_tuple (tuple): these tuples are CODON_TUPLE and CODON_PAIR_TUPLE from GeneticCode.py
+            reference_array (np.ndarray): an alias for self.codon_reference or self.codon_pair_reference
+            conservation_array (np.ndarray): an alias for self.codon_conservation or self.codon_pair_conservation
+            is_codon (bool): specifies whether the generated dataframe contains information for single codons
+            index (int): a numeric value to organize files by the order in which they are parsed
+            reading_frame (int): the reading frame from which codons and codon pairs are determined
         """
+        # Check input
+        if reading_frame not in {0, 1, 2}:
+            raise BioSeekerExceptions.InvalidReadingFrame()
+
         m_array = np.column_stack((list(m_tuple), reference_array, conservation_array))
 
         dataframe = pd.DataFrame(m_array)
@@ -157,11 +170,25 @@ class ConservationRateCalculator:
 
         return None
 
-    def calculate_rate(self, sequences_array: list, indicated_index: int, reading_frame: int):
+    def calculate_rate(self, sequences_array: list, indicated_index: int, m_reading_frame: int) -> None:
         """
-        Fill this up
+        Public method to calculate codon and codon pair reference values and conservation count.
+
+        Args:
+            sequences_array (list)
+            indicated_index (int): an integer value used to order files by number
+            m_reading_frame (int): the reading frame from which codons and codon pairs are determined
+
+        Raises:
+            InvalidReadingFrame: reading frame can only take values in {0, 1, 2}, there are no other reading frames
+
+        Returns:
+            None
         """
-        self.__create_arrays(sequences_array, reading_frame)
+        if m_reading_frame not in {0, 1, 2}:
+            raise BioSeekerExceptions.InvalidReadingFrame()
+
+        self.__create_arrays(sequences_array, m_reading_frame)
         self.__establish_references()
 
         self.codon_history = self.__compute_reference(self.codon_reference, self.codons)
@@ -184,150 +211,23 @@ class ConservationRateCalculator:
                             self.codon_pair_conservation,
                             self.reference_codon_pair_history)
 
-        pass
+        # Create dataframe for codons
+        self.__create_dataframes(CODON_TUPLE,
+                                 self.codon_reference,
+                                 self.codon_conservation,
+                                 is_codon=True,
+                                 index=indicated_index,
+                                 reading_frame=m_reading_frame)
+
+        # Create dataframe for codon pairs
+        self.__create_dataframes(CODON_PAIRS_TUPLE,
+                                 self.codon_pair_reference,
+                                 self.codon_pair_conservation,
+                                 is_codon=False,
+                                 index=indicated_index,
+                                 reading_frame=m_reading_frame)
+
+        return None
 
     def parse_info(self):
         pass
-
-
-def calculations(sequences_array: list, indicated_index: int, reading_frame: int):
-    """Function to calculate codon and codon pair conservation rates
-
-    Args:
-        sequences_array (list): An array of sequences
-        indicated_index (int): auxiliary index to identify files
-        reading_frame (int): Reading frame. Can only take values in {0, 1, 2}
-
-    Raises:
-        InvalidReadingFrame: invalid reading frame.
-
-    Returns:
-        pandas.DataFrame: codon dataframe
-        pandas.DataFrame: codon pair dataframe
-    """
-    if reading_frame not in {0, 1, 2}:
-        raise BioSeekerExceptions.InvalidReadingFrame()
-
-    codons = []
-    bicodons = []
-    codon_size = 3
-
-    #   Using the obtained array in the previous function, we divide the sequences in fragments of 3 and 6 bases
-    #   Groups of codons and bicodons are assembled with a "codon_size" step of 3 nucleotides
-    print(f"Creating codon and codon pair arrays at reading+{reading_frame}...")
-    for _, k in sequences_array:
-        for j in k:
-            codon = [j[i:i+codon_size] for i in range(reading_frame, len(j), codon_size)]
-            bicodon = [j[i:i+2*codon_size] for i in range(reading_frame, len(j), codon_size)]
-            codons.append(codon)
-            bicodons.append(bicodon)
-
-    #   Converting to Numpy array
-    codons = np.asarray(codons)
-    bicodons = np.asarray(bicodons)  # Numpy: VisibleDeprecationWarning, dtype = object.
-
-    #   Reference lists
-    print(f"Establishing reference sequences at reading+{reading_frame}...")
-    codon_reference = codons[0]
-    bicodon_reference = bicodons[0]
-
-    """
-    1. Crear numpy array de codones y pares de codones
-    2. Establecer cuál es la referencia de codones y pares de codones (como codons[0])
-    3. Calcular el largo de la lista de codones de referencia (len(codon_reference))
-    3.1. Guardarlo en un atributo de clase?
-    """
-    #   Creating accessory lists to store the calculations
-    number_of_reference_codons = len(codon_reference)
-    number_of_reference_bicodons = len(bicodon_reference)
-
-    codon_history = np.zeros(number_of_reference_codons, dtype="i")
-    bicodon_history = np.zeros(number_of_reference_bicodons, dtype="i")
-
-    reference_codon_history = np.zeros(61, dtype="i")
-    reference_bicodon_history = np.zeros(3721, dtype="i")
-
-    conserved_codon_history = np.zeros(number_of_reference_codons, dtype="i")
-    conserved_bicodon_history = np.zeros(number_of_reference_bicodons, dtype="i")
-
-    codon_conservation = np.zeros(61, dtype="i")
-    bicodon_conservation = np.zeros(3721, dtype="i")
-
-    #   Calculations
-    print(f"Computing conservation for codon_history and bicodon_history at reading+{reading_frame}...")
-    for count, i in enumerate(codon_reference, start=0):
-        slicer = codons[:, count]
-        for j in slicer:
-            if j == i:
-                codon_history[count] += 1
-
-    for count, i in enumerate(bicodon_reference, start=0):
-        slicer = bicodons[:, count]
-        for j in slicer:
-            if j == i:
-                bicodon_history[count] += 1
-
-    print("Computation successful.")
-    print(f"Computing conservation history at reading+{reading_frame}...")
-
-    aux1 = len(codons[:, 0])
-    aux2 = len(bicodons[:, 0])
-
-    for count, x in enumerate(codon_history, start=0):
-        if x/aux1 > 0.9:
-            conserved_codon_history[count] += 1
-
-    for count, x in enumerate(bicodon_history, start=0):
-        if x/aux2 > 0.9:
-            conserved_bicodon_history[count] += 1
-
-    print("Computation successful.")
-    # This part of the code is computationally expensive. We have to find a way to optimize it
-    print(f"Assembling conservation matrix(cod_ref, hisc) for reading+{reading_frame}...")
-
-    conservation_matrix_reference_codons = np.column_stack((np.asarray(codon_reference),
-                                                            np.asarray(conserved_codon_history)))
-    conservation_matrix_reference_bicodons = np.column_stack((np.asarray(bicodon_reference),
-                                                              np.asarray(conserved_bicodon_history)))
-
-    for count, codon in enumerate(CODON_TUPLE, start=0):
-        for i in conservation_matrix_reference_codons:
-            if (i[1] != '0') and (i[0] == codon):
-                codon_conservation[count] += 1
-
-    for count, bicodon in enumerate(CODON_PAIRS_TUPLE, start=0):
-        for i in conservation_matrix_reference_bicodons:
-            if (i[1] != '0') and (i[0] == bicodon):
-                bicodon_conservation[count] += 1
-
-    for count, cod in enumerate(CODON_TUPLE, start=0):
-        for i in codon_reference:
-            if cod == i:
-                reference_codon_history[count] += 1
-
-    for count, bicod in enumerate(CODON_PAIRS_TUPLE, start=0):
-        for i in bicodon_reference:
-            if bicod == i:
-                reference_bicodon_history[count] += 1
-
-    # HASTA ACÁ FUE REFACTORIZADO. SEGUIR CON LO QUE ESTÁ DESPUÉS DE ESTO...
-
-    codon_array = np.column_stack((list(CODON_TUPLE), reference_codon_history, codon_conservation))
-    bicodon_array = np.column_stack((list(CODON_PAIRS_TUPLE), reference_bicodon_history, bicodon_conservation))
-
-    print(f"The assembly has been successful. Creating dataframes for reading+{reading_frame}...")
-
-    #   Creating dataframes and changing column names
-    codon_dataframe = pd.DataFrame(codon_array)
-    bicodon_dataframe = pd.DataFrame(bicodon_array)
-
-    codon_dataframe = codon_dataframe.rename(columns={0: 'codon', 1: 'ReferenceCount', 2: 'ConservationCount'})
-    bicodon_dataframe = bicodon_dataframe.rename(columns={0: 'codon_pair', 1: 'ReferenceCount', 2: 'ConservationCount'})
-
-    #   Exporting dataframes to CSV files
-    dataframe_codons = codon_dataframe.to_csv("history_codons" + "_" + str(indicated_index)
-                                              + "_" + str(reading_frame) + ".csv", index=False)
-    dataframe_bicodons = bicodon_dataframe.to_csv("history_bicodons" + "_" + str(indicated_index)
-                                                  + "_" + str(reading_frame) + ".csv", index=False)
-
-    return dataframe_codons, dataframe_bicodons
