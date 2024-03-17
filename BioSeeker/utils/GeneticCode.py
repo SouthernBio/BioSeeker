@@ -16,6 +16,7 @@ CODON_TUPLE = ('TTG', 'GGC', 'CCG', 'CAG', 'TCT', 'TGG', 'GCG', 'GCT', 'CTT', 'G
                'CCC', 'AGT', 'TCC', 'TGC', 'GTC', 'CGG', 'CGC', 'GGG', 'ACG', 'CAA', 'AGG', 'CAC', 'TCG', 'CGT', 'CTC',
                'GCA')
 
+# noinspection SpellCheckingInspection
 CODON_PAIRS_TUPLE = ('TATCAA', 'CATGGG', 'TCTCTT', 'AGGATT', 'CGTCTT', 'CCTTAC', 'AGCCTG', 'CGTCAA', 'TGGCAT', 'GCTACC',
                      'GATGGT', 'GCCCGG', 'AGCCAT', 'GAATCC', 'ATGTGG', 'CTTGCC', 'TCTTGG', 'GCGCTA', 'GGGCTC', 'CCGTTT',
                      'CTATAC', 'CGAATT', 'TGTGAT', 'TCCATG', 'TCCATT', 'ATCGGC', 'TGGTCT', 'CGAAAT', 'TGTGCC', 'ATCCGT',
