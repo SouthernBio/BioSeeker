@@ -1,5 +1,5 @@
 import os
-from BioSeeker.core import BioSeekerExceptions
+from BioSeeker.core.BioSeekerExceptions import NotAFastaFile
 
 
 def extract_sequences(file: str):
@@ -18,7 +18,7 @@ def extract_sequences(file: str):
     """
     # Checking file extension
     if not file.endswith('.afa'):
-        raise BioSeekerExceptions.NotAFastaFile()
+        raise NotAFastaFile()
 
     try:
         # Creating auxiliary lists and variables
