@@ -31,7 +31,7 @@ def split_codon_pairs(file_path: str) -> pd.DataFrame:
     """Generate two columns with each constituent codon from a codon pair
 
     Args:
-        file_path (str): File which contains relevant
+        file_path (str): Path to the file which contains a column with codon pairs
     Raises:
          NotADataframe: file_path does not correspond to a dataframe file
     Returns:
