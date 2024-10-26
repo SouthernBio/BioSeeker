@@ -7,7 +7,7 @@ from tools.assembler import assembler
 from tools.delete import delete_csv_files
 from utils.intro import intro_message
 from os import getcwd
-from upload_icps import upload_icps
+from tools.upload_icps import upload_icps
 
 
 def main():
