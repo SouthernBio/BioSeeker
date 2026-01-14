@@ -11,6 +11,7 @@ This project facilitates calculating codon and bicodon conservation rates for a 
 - **Robust Parsing**: Uses Biopython to handle standard FASTA/AFA formats.
 - **Efficient Analysis**: Vectorized calculations using NumPy for performance.
 - **Conservation Metrics**: Calculates conservation rates for both single codons and codon pairs (bicodons) across three reading frames (ORF 0, 1, 2).
+- **RSCU Analysis**: Calculates Relative Synonymous Codon Usage (RSCU) for each species across the entire dataset.
 - **Aggregation**: Automatically aggregates results from multiple alignment files.
 - **Dockerized**: specific container for easy deployment and usage.
 
@@ -48,6 +49,14 @@ bioseeker --input FASTA_files --output results
 **Arguments:**
 - `--input`, `-i`: Directory containing input alignment files (default: `FASTA_files`).
 - `--output`, `-o`: Directory to save CSV results (default: `results`).
+
+### RSCU Analysis
+
+To calculate the global RSCU values:
+
+```bash
+python src/bioseeker/analysis/rscu_analysis.py FASTA_files results/global_rscu.csv
+```
 
 ### Docker
 

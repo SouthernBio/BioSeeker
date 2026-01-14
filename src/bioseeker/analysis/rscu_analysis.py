@@ -108,6 +108,33 @@ def process_msa_file(file_path):
     return species_counts
 
 
+def identify_rare_codons(rscu_data, output_path, threshold=1.0):
+    """
+    Identifies codons where RSCU < threshold for ALL species.
+    Writes to output_path.
+    rscu_data structure: {Codon: {Species: RSCU_Value}} (values are floats or strings)
+    """
+    rare_codons = []
+    
+    # Sort codons for consistent output
+    sorted_codons = sorted(rscu_data.keys())
+    
+    for codon in sorted_codons:
+        species_values = rscu_data[codon]
+        # Check if all species have RSCU < threshold
+        # Values in data might be strings "0.0000". Convert to float.
+        if all(float(val) < threshold for val in species_values.values()):
+            rare_codons.append(codon)
+            
+    try:
+        with open(output_path, 'w') as f:
+            for codon in rare_codons:
+                f.write(f"{codon}\n")
+        print(f"Generated rare codons file at {output_path} (Threshold < {threshold})")
+    except IOError as e:
+        print(f"Error writing rare codons: {e}")
+
+
 def process_directory(input_path, output_csv):
     """
     Iterates over all MSA files, aggregates counts, and writes one CSV.
@@ -121,13 +148,12 @@ def process_directory(input_path, output_csv):
         
     global_counts = defaultdict(Counter) # {Species: Counter}
     
+    # ... (code to read files)
     if input_path.is_file():
-        # Single file case, basically just wrapper for that
         file_counts = process_msa_file(input_path)
         for sp, counts in file_counts.items():
             global_counts[sp].update(counts)
     elif input_path.is_dir():
-        # Iterate
         files = list(input_path.glob('*.afa'))
         print(f"Found {len(files)} .afa files in {input_path}")
         
@@ -143,7 +169,6 @@ def process_directory(input_path, output_csv):
         return
 
     # Now calculate RSCU for global counts
-    # Structure: {Codon: {Species: RSCU}}
     code_map = get_standard_genetic_code()
     all_codons = sorted([c for codons in code_map.values() for c in codons])
     
@@ -151,14 +176,18 @@ def process_directory(input_path, output_csv):
     species_list = sorted(global_counts.keys())
     
     print("Calculating RSCU...")
+    
+    # Keep track of numerical values for rare identification
+    # Start with explicit loop
+    
     for sp in species_list:
         counts = global_counts[sp]
         rscu_map = calculate_rscu_from_counts(counts)
         for codon in all_codons:
             val = rscu_map.get(codon, 0.0)
-            data[codon][sp] = f"{val:.4f}"
+            data[codon][sp] = val # Store float first
             
-    # Write to CSV
+    # Write CSV
     try:
         with open(output_csv, 'w', newline='') as csvfile:
             fieldnames = ['Codon'] + species_list
@@ -168,11 +197,16 @@ def process_directory(input_path, output_csv):
             for codon in all_codons:
                 row = {'Codon': codon}
                 for sp in species_list:
-                    row[sp] = data[codon].get(sp, "0.0000")
+                    # Write formatted
+                    row[sp] = f"{data[codon][sp]:.4f}"
                 writer.writerow(row)
         print(f"Generated {output_csv}") 
     except IOError as e:
         print(f"Error writing to {output_csv}: {e}")
+        
+    # Generate Rare Codons
+    rare_codons_path = output_csv.parent / "rare_codons.txt"
+    identify_rare_codons(data, rare_codons_path)
 
 
 def main():

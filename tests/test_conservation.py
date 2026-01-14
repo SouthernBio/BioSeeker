@@ -7,6 +7,7 @@ def test_split_into_codons():
     assert split_into_codons(seq, 1) == ["TGG"] # 1:4 TGG, next 4:7 (out)
     assert split_into_codons(seq, 2) == ["GGC"] 
 
+
 def test_calculate_conservation_identical():
     # 3 identical sequences
     seqs = ["ATGGCC", "ATGGCC", "ATGGCC"]
@@ -22,6 +23,7 @@ def test_calculate_conservation_identical():
     row_gcc = c_df[c_df['codon'] == 'GCC'].iloc[0]
     assert row_gcc['ReferenceCount'] == 1
     assert row_gcc['ConservationCount'] == 1
+
 
 def test_calculate_conservation_variation():
     # 1 ref: ATGGCC

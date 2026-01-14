@@ -2,7 +2,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from collections import Counter
 from bioseeker.analysis.rscu_analysis import (
-    calculate_rscu_for_sequence, 
     process_msa_file, 
     get_standard_genetic_code,
     count_codons_for_sequence,

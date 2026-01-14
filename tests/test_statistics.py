@@ -6,6 +6,7 @@ from bioseeker.analysis.statistics import (
     filter_inhibitory_pairs
 )
 
+
 def test_calculate_expected_bicodon_rates():
     # Mock data
     # Codon A: Rate 0.5
@@ -28,6 +29,7 @@ def test_calculate_expected_bicodon_rates():
     
     result = calculate_expected_bicodon_rates(codon_df, bicodon_df)
     assert result.iloc[0]['ExpectedRate'] == pytest.approx(0.4)
+
 
 def test_calculate_z_scores():
     # Case: Observed >> Expected
