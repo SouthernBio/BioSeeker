@@ -1,6 +1,6 @@
 # BioSeeker
 
-![BioSeeker](https://github.com/fx-biocoder/BioSeeker/blob/main/utils/bioseeker.png)
+![BioSeeker](https://github.com/fx-biocoder/BioSeeker/blob/main/logo.png)
 
 BioSeeker is a Python library and CLI tool for the analysis of codon and bicodon conservation rates across linked species.
 
