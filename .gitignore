@@ -5,5 +5,8 @@ bicodon*.csv
 codon*.csv
 __pycache__
 .vscode
-unreadable.txt
 dataframes/*
+.pytest_cache
+results
+rare_codons.txt
+FASTA_files/*.afa

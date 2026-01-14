@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: bioseeker
+Version: 1.0.0
+Summary: A tool for analyzing conservation of inhibitory codon pairs.
+Author-email: Facundo Martinez <fxmartinez@proton.me>
+Requires-Python: >=3.9
+License-File: LICENSE.md
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: biopython
+Requires-Dist: matplotlib
+Requires-Dist: scipy
+Dynamic: license-file

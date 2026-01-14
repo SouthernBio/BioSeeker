@@ -1,63 +1,85 @@
-# BioSeeker: Python library for the analysis of codon/bicodon conservation rates across linked species
+# BioSeeker
 
-![BioSeeker (c) 2023 All rights reserved](https://github.com/fx-biocoder/BioSeeker/blob/main/utils/bioseeker.png)
-This project facilitates calculating codon and bicodon conservation rates for a given genus.
+![BioSeeker](https://github.com/fx-biocoder/BioSeeker/blob/main/utils/bioseeker.png)
 
-### Useful Links:
-* [Project backlog (in progress)](https://github.com/SouthernBio/BioSeeker/projects)
-* [Wiki (in progress)](https://github.com/SouthernBio/BioSeeker/wiki)
-* [Paper: Conservation of location of several specific inhibitory codon pairs in the Saccharomyces sensu stricto yeasts reveals translational selection (Ghoneim et al., 2019)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/)
+BioSeeker is a Python library and CLI tool for the analysis of codon and bicodon conservation rates across linked species.
 
-### 1. About the project
+This project facilitates calculating codon and bicodon conservation rates for a given genus. It is inspired by the paper [Conservation of location of several specific inhibitory codon pairs in the Saccharomyces sensu stricto yeasts reveals translational selection (Ghoneim et al., 2019)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/).
 
-Open-source bioinformatics project licensed under GPL v3.0 The inspiration for this project came from [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/), which I've tried to (partially) replicate using Drosophila's alignments from [FlyDIVaS](https://flydivas.info). Feel free to make as many additions as you'd like.
+## Features
 
-### 2. How does it work?
+- **Robust Parsing**: Uses Biopython to handle standard FASTA/AFA formats.
+- **Efficient Analysis**: Vectorized calculations using NumPy for performance.
+- **Conservation Metrics**: Calculates conservation rates for both single codons and codon pairs (bicodons) across three reading frames (ORF 0, 1, 2).
+- **Aggregation**: Automatically aggregates results from multiple alignment files.
+- **Dockerized**: specific container for easy deployment and usage.
 
-In this repo you will find a Python script called `bioseeker.py`. It takes a file (or a group of files) as input, which contains homologous genes previously aligned, in FASTA format. After parsing the file(s) for data extraction, it creates a matrix using `NumPy`, in order to iterate across matrix slices. The obtained information (codon count from reference sequence, and number of times that said codon was conserved across species) is stored in a CSV file, which is created using `Pandas`. For each MSA file two types of dataframes will be generated - one for codons, and another for codon pairs. The algorithm calculates codon/bicodon conservation rates across all 3 reading frames. So, there will be a total of 6 CSV files that will be generated (2 for each reading frame). 
+## Installation
 
-### 3. Installing and running the program
+### From Source
 
-Start by cloning the repository:
-
-```bash
-$ git clone https://github.com/SouthernBio/BioSeeker
-```
-
-Copy and paste the MSA FASTA files on the directory where `bioseeker.py` is located. 
-
-Make sure that your Python interpreter is added to `PATH`. Then, you can activate the virtual environment and run BioSeeker.
-
-### Windows PowerShell:
+Requires Python 3.9+.
 
 ```bash
-$ pipenv shell
-$ ./bioseeker # or 'py -m bioseeker'
+git clone https://github.com/SouthernBio/BioSeeker.git
+cd BioSeeker
+pip install .
 ```
 
-### GNU/Linux:
+### Development
 
 ```bash
-$ pipenv shell
-$ bioseeker # or 'python3 -m bioseeker"
+python3 -m venv venv
+source venv/bin/activate
+pip install -e .
+pip install pytest
 ```
 
-If you want to test how the program works before using it on your data, you will find alignment files on `FASTA_files/`. 
+## Usage
 
-### 4. Dependencies
+### Command Line
 
-To execute this script you must install Python, Git (if you want to clone the repo with Git) and its package manager, `pip`. You can do it on Ubuntu through the terminal:
+BioSeeker provides a simple CLI. Place your aligned FASTA files (extension `.afa`, `.fasta`, or `.fa`) in a directory (e.g., `FASTA_files`).
+
 ```bash
-$ sudo apt-get update
-$ sudo apt-get install python3 python3-pip git-all
-```
-Once you have installed Python and its package manager, you can proceed to install `pipenv`:
-```bash
-$ pip3 install pipenv
+bioseeker --input FASTA_files --output results
 ```
 
-### 5. Additional details
-After parsing the files and calculating conservation rates, it will also generate a file called `unreadable.txt` which stores the names of MSA files that could not be parsed. Then, it will assemble all individual dataframes into 6 different dataframes that contain all the information across linked species. BioSeeker will automatically create a new directory called `dataframes/` which will contain all the new dataframes.
+**Arguments:**
+- `--input`, `-i`: Directory containing input alignment files (default: `FASTA_files`).
+- `--output`, `-o`: Directory to save CSV results (default: `results`).
+
+### Docker
+
+You can run BioSeeker without installing Python dependencies using Docker.
+
+**Build the image:**
+```bash
+docker build -t bioseeker .
+```
+
+**Run the container:**
+Assuming your data is in the current directory under `FASTA_files`:
+
+```bash
+docker run -v $(pwd)/FASTA_files:/data/input -v $(pwd)/results:/data/output bioseeker --input /data/input --output /data/output
+```
+
+## Output
+
+The tool generates CSV files in the output directory:
+- `codon_conservation_ORF0.csv`, `ORF1.csv`, `ORF2.csv`
+- `bicodon_conservation_ORF0.csv`, `ORF1.csv`, `ORF2.csv`
+
+Each file contains:
+- `codon` / `codon_pair`: The sequence.
+- `ReferenceCount`: Occurrences in the reference sequence.
+- `ConservationCount`: Number of times the codon was conserved (>90% match) across alignments.
+- `ConservationRate`: `ConservationCount / ReferenceCount`.
+
+## License
+
+GNU General Public License v3.0. See [LICENSE](LICENSE.md).
 
 ## 💙 Support this project
 
