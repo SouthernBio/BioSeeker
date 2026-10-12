@@ -68,7 +68,7 @@ Before counting, columns that are gaps in **every** sequence being compared are 
 ### 3.3 Positional Conservation
 Let $N$ be the number of sequences in the alignment (or the number of matching species when using `--species`), including the reference. A reference codon at position $i$ is **conserved** if:
 
-$$\#\{\,s : \text{codon}_s(i) = \text{codon}_{\text{ref}}(i)\,\} \;\ge\; t \cdot N$$
+$$|\{\,s : \text{codon}_s(i) = \text{codon}_{\text{ref}}(i)\,\}| \;\ge\; t \cdot N$$
 
 where $t$ is `--threshold`. With the default value, $t = 1.0$, this equates to **sequence and position identity across all species**, which is the paper's definition (Fig. 1A).
 
@@ -157,11 +157,11 @@ $s$ is the sample standard deviation (ddof = 1) of the family. Families with few
 
 ## 7. Optional Filters
 
-| Option | Description | Source |
-|---|---|---|
-| `--icp-list FILE` | Extracts statistics for a list of known pairs (e.g., the 17 ICPs in *S. cerevisiae*). Accepts `CGACGA`, `CGA-CGA`, or RNA notation (e.g. `CUC-CCG`) | Paper |
-| `--rare-codons FILE` | Returns `high` outliers made up of **two** rare codons | BioSeeker Extension |
-| `bioseeker rscu` | Calculates global RSCU per species and defines rare codons as those with RSCU < threshold across **all** species (excludes Met/Trp) | BioSeeker Extension |
+| Option | Description |
+|---|---|
+| `--icp-list FILE` | Extracts statistics for a list of known pairs (e.g., the 17 ICPs in *S. cerevisiae*). Accepts `CGACGA`, `CGA-CGA`, or RNA notation (e.g. `CUC-CCG`) |
+| `--rare-codons FILE` | Returns `high` outliers made up of **two** rare codons |
+| `bioseeker rscu` | Calculates global RSCU per species and defines rare codons as those with RSCU < threshold across **all** species (excludes Met/Trp) |
 
 *Note:* In the paper, ICPs were defined **experimentally** (GFP libraries + FACS + sequencing; Gamble et al., 2016), not by RSCU. The rare codon filter is an exploratory heuristic for organisms without experimental data.
 
