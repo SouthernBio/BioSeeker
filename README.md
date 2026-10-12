@@ -1,5 +1,7 @@
 # BioSeeker
 
+[![PyPI Version](https://img.shields.io/pypi/v/bioseeker.svg)](https://pypi.org/project/bioseeker/)
+[![Ubuntu PPA](https://img.shields.io/badge/Ubuntu%20PPA-ppa%3Afx--biocoder%2Fbioseeker-E95420.svg?logo=ubuntu&logoColor=white)](https://launchpad.net/~fx-biocoder/+archive/ubuntu/bioseeker)
 [![CI](https://github.com/SouthernBio/BioSeeker/actions/workflows/ci.yml/badge.svg)](https://github.com/SouthernBio/BioSeeker/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.md)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](pyproject.toml)
@@ -20,6 +22,20 @@ You can read the exact mathematical definitions of these metrics in the [Methodo
 
 ## Installation
 
+### From Ubuntu PPA (Recommended for Ubuntu/Debian)
+
+```bash
+sudo add-apt-repository ppa:fx-biocoder/bioseeker
+sudo apt update
+sudo apt install bioseeker
+```
+
+### From PyPI
+
+```bash
+pip install bioseeker
+```
+
 ### From Source
 
 Requires Python 3.11+.
@@ -29,13 +45,6 @@ git clone https://github.com/SouthernBio/BioSeeker.git
 cd BioSeeker
 pip install .
 ```
-
-### From PyPI
-
-```bash
-pip install bioseeker
-```
-
 
 ### Development
 
@@ -101,7 +110,7 @@ The tool generates CSV files and plots in the output directory for each analyzed
 - `bicodon_stats_ORF0.csv`: Full metrics including ExpectedRate, FittedRate, Outlier status, NormalizedScore, and DipeptideZ.
 - `conservation_regression_ORF0.png`: Plot of observed vs expected conservation rates.
 
-For a full explanation of the outputs, refer to the [Methodology Documentation](docs/METHODOLOGY.md).
+For a full explanation of the outputs, refer to the [Methodology Documentation](https://github.com/SouthernBio/BioSeeker/blob/main/docs/METHODOLOGY.md).
 
 ## License
 
