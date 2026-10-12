@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bioseeker"
-version = "2.0.0"
+version = "2.0.1"
 description = "A tool for analyzing conservation of inhibitory codon pairs."
 authors = [{name = "Facundo Martinez", email = "fxmartinez@proton.me"}]
 readme = "README.md"
