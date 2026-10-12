@@ -1,19 +1,21 @@
-# Base image
+# Build stage
+FROM python:3.11-slim AS builder
+
+WORKDIR /build
+COPY . .
+RUN pip install --no-cache-dir build && python -m build -w
+
+# Final stage
 FROM python:3.11-slim
 
-WORKDIR /app
+RUN useradd -m -s /bin/bash bioseeker
+USER bioseeker
+WORKDIR /home/bioseeker
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /build/dist/*.whl .
+RUN pip install --no-cache-dir --user *.whl && rm *.whl
 
-# Copy project files
-COPY . .
+ENV PATH="/home/bioseeker/.local/bin:${PATH}"
 
-# Run build script
-RUN ./build.sh
-
-# Set entrypoint
 ENTRYPOINT ["bioseeker"]
 CMD ["--help"]

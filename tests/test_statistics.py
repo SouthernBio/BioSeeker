@@ -1,65 +1,76 @@
 import pandas as pd
 import pytest
+
 from bioseeker.analysis.statistics import (
+    analyze_pairs,
     calculate_expected_bicodon_rates,
-    calculate_z_scores,
-    filter_inhibitory_pairs
+    filter_inhibitory_pairs,
 )
 
 
 def test_calculate_expected_bicodon_rates():
-    # Mock data
-    # Codon A: Rate 0.5
-    # Codon B: Rate 0.8
     codon_data = {
-        'codon': ['AAA', 'TTT'],
-        'ConservationRate': [0.5, 0.8],
-        'ReferenceCount': [100, 100],
-        'ConservationCount': [50, 80]
+        "Codon": ["AAA", "TTT"],
+        "ConservationRate": [0.5, 0.8],
+        "ReferenceCount": [100, 100],
+        "ConservationCount": [50, 80],
     }
     codon_df = pd.DataFrame(codon_data)
-    
-    # Bicodon AAATTT (A-B) -> Exp = 0.5 * 0.8 = 0.4
+
     bicodon_data = {
-        'codon_pair': ['AAATTT'],
-        'ReferenceCount': [100],
-        'ConservationCount': [40] # 0.4 observed
+        "CodonPair": ["AAATTT"],
+        "Codon1": ["AAA"],
+        "Codon2": ["TTT"],
+        "ReferenceCount": [100],
+        "ConservationCount": [40],
     }
     bicodon_df = pd.DataFrame(bicodon_data)
-    
+
     result = calculate_expected_bicodon_rates(codon_df, bicodon_df)
-    assert result.iloc[0]['ExpectedRate'] == pytest.approx(0.4)
+    assert result.iloc[0]["ExpectedRate"] == pytest.approx(0.4)
 
 
-def test_calculate_z_scores():
-    # Case: Observed >> Expected
-    # N=100, Exp=0.1, Obs=0.5
-    # Mean = 0.1, Var = 0.1*0.9/100 = 0.0009, Sigma = 0.03
-    # Z = (0.5 - 0.1) / 0.03 = 13.33 -> Conserved
-    df = pd.DataFrame({
-        'codon_pair': ['AAAAAA'],
-        'ReferenceCount': [100],
-        'ExpectedRate': [0.1],
-        'ConservationRate': [0.5]
-    })
-    
-    res = calculate_z_scores(df)
-    assert res.iloc[0]['ZScore'] > 3
-    assert res.iloc[0]['IsConserved'] == True
+def test_analyze_pairs_regression():
+    # Make a dummy dataset where Expected == Observed
+    codon_df = pd.DataFrame(
+        {
+            "Codon": ["AAA", "TTT", "CCC"],
+            "ReferenceCount": [100, 100, 100],
+            "ConservationCount": [50, 80, 50],
+            "ConservationRate": [0.5, 0.8, 0.5],
+        }
+    )
+
+    bicodon_df = pd.DataFrame(
+        {
+            "CodonPair": ["AAATTT", "TTTCCC"],
+            "Codon1": ["AAA", "TTT"],
+            "Codon2": ["TTT", "CCC"],
+            "ReferenceCount": [100, 100],
+            "ConservationCount": [40, 40],  # exactly Expected
+            "ConservationRate": [0.4, 0.4],
+        }
+    )
+
+    stats_df, fit = analyze_pairs(codon_df, bicodon_df, n_reference_codons=300, sigma_threshold=3.0)
+
+    assert fit.slope == pytest.approx(1.0)
+    assert fit.r_squared == pytest.approx(1.0)
+    assert stats_df.iloc[0]["Outlier"] == ""
+
 
 def test_filter_inhibitory_pairs():
-    # Rare: AAA
-    # Pair 1: AAA-AAA (Conserved) -> Inhibitory
-    # Pair 2: AAA-TTT (Conserved) -> Not Inhibitory (one rare)
-    # Pair 3: AAA-AAA (Not Conserved) -> Not Inhibitory
-    
-    rare = ['AAA']
-    df = pd.DataFrame({
-        'codon_pair': ['AAAAAA', 'AAATTT', 'AAAAAA'],
-        'IsConserved': [True, True, False]
-    })
-    
+    rare = ["AAA"]
+    df = pd.DataFrame(
+        {
+            "CodonPair": ["AAAAAA", "AAATTT", "AAAAAA"],
+            "Codon1": ["AAA", "AAA", "AAA"],
+            "Codon2": ["AAA", "TTT", "AAA"],
+            "Outlier": ["low", "low", "high"],
+        }
+    )
+
     res = filter_inhibitory_pairs(df, rare)
     assert len(res) == 1
-    assert res.iloc[0]['codon_pair'] == 'AAAAAA'
-    assert res.iloc[0]['IsConserved'] == True
+    assert res.iloc[0]["CodonPair"] == "AAAAAA"
+    assert res.iloc[0]["Outlier"] == "high"

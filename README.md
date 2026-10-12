@@ -1,25 +1,28 @@
 # BioSeeker
 
-![BioSeeker](https://github.com/fx-biocoder/BioSeeker/blob/main/logo.png)
+[![CI](https://github.com/SouthernBio/BioSeeker/actions/workflows/ci.yml/badge.svg)](https://github.com/SouthernBio/BioSeeker/actions)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.md)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](pyproject.toml)
+
+![BioSeeker](logo.png)
 
 BioSeeker is a Python library and CLI tool for the analysis of codon and bicodon conservation rates across linked species.
 
-This project facilitates calculating codon and bicodon conservation rates for a given genus. It is inspired by the paper [Conservation of location of several specific inhibitory codon pairs in the Saccharomyces sensu stricto yeasts reveals translational selection (Ghoneim et al., 2019)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/).
+With this project, you can calculate codon and bicodon conservation rates for a given genus. It is based on the math from [Conservation of location of several specific inhibitory codon pairs in the Saccharomyces sensu stricto yeasts reveals translational selection (Ghoneim et al., 2019)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6379720/).
 
-## Features
+## What it does
 
-- **Robust Parsing**: Uses Biopython to handle standard FASTA/AFA formats.
-- **Efficient Analysis**: Vectorized calculations using NumPy for performance.
-- **Conservation Metrics**: Calculates conservation rates for both single codons and codon pairs (bicodons) across three reading frames (ORF 0, 1, 2).
-- **RSCU Analysis**: Calculates Relative Synonymous Codon Usage (RSCU) for each species across the entire dataset.
-- **Aggregation**: Automatically aggregates results from multiple alignment files.
-- **Dockerized**: specific container for easy deployment and usage.
+BioSeeker calculates conservation rates for single codons and codon pairs (bicodons) across three reading frames (ORF 0, 1, 2) by reading standard FASTA formats with Biopython. It automatically aggregates results from multiple alignment files and uses NumPy to speed up the math.
+
+Beyond simple counting, it runs linear regressions, finds outliers, and computes dipeptide-based z-scores to help you isolate translational selection signals. It can also calculate the Relative Synonymous Codon Usage (RSCU) for your dataset. If you prefer to avoid installing local dependencies, there is a Docker image available.
+
+You can read the exact mathematical definitions of these metrics in the [Methodology Documentation](docs/METHODOLOGY.md).
 
 ## Installation
 
 ### From Source
 
-Requires Python 3.9+.
+Requires Python 3.11+.
 
 ```bash
 git clone https://github.com/SouthernBio/BioSeeker.git
@@ -30,32 +33,41 @@ pip install .
 ### Development
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -e .
-pip install pytest
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
 ```
 
 ## Usage
 
 ### Command Line
 
-BioSeeker provides a simple CLI. Place your aligned FASTA files (extension `.afa`, `.fasta`, or `.fa`) in a directory (e.g., `FASTA_files`).
+BioSeeker provides a command line interface with a few subcommands. Place your aligned FASTA files in a directory (e.g., `FASTA_files`).
+
+**Full Analysis Pipeline:**
+The `analyze` subcommand runs the full pipeline (counts, rates, regressions, and plots).
 
 ```bash
-bioseeker --input FASTA_files --output results
+bioseeker analyze --input FASTA_files --output results --species Scer Spar Smik Skud Sbay
 ```
 
-**Arguments:**
+**Key Arguments for `analyze`:**
 - `--input`, `-i`: Directory containing input alignment files (default: `FASTA_files`).
-- `--output`, `-o`: Directory to save CSV results (default: `results`).
+- `--output`, `-o`: Directory to save CSV results and plots (default: `results`).
+- `--species`: Only process alignments containing all specified species (e.g., `--species Scer Spar Smik Skud Sbay`). Incomplete alignments are discarded.
+- `--reference`: Reference sequence ID (default: first sequence in the file).
+- `--threshold`: Conservation threshold (default: `1.0`, meaning 100% identity required).
+- `--genetic-code`: NCBI translation table ID (default: `1` for Standard). This is necessary because different organisms may use different translation tables (e.g., *Candida* uses table 12 where CTG translates to Serine instead of Leucine, and different tables have different stop codons).
+- `--orfs`: Reading frames to analyze (default: `0 1 2`).
+- `--sigma-threshold`: Threshold (in σ) for outlier detection (default: `3.0`).
 
 ### RSCU Analysis
 
-To calculate the global RSCU values:
+To calculate the global RSCU values across your alignments:
 
 ```bash
-python src/bioseeker/analysis/rscu_analysis.py FASTA_files results/global_rscu.csv
+bioseeker rscu --input FASTA_files --output results
 ```
 
 ### Docker
@@ -76,15 +88,13 @@ docker run -v $(pwd)/FASTA_files:/data/input -v $(pwd)/results:/data/output bios
 
 ## Output
 
-The tool generates CSV files in the output directory:
-- `codon_conservation_ORF0.csv`, `ORF1.csv`, `ORF2.csv`
-- `bicodon_conservation_ORF0.csv`, `ORF1.csv`, `ORF2.csv`
+The tool generates CSV files and plots in the output directory for each analyzed ORF (e.g., `ORF0`):
+- `codon_conservation_ORF0.csv`: Raw codon counts.
+- `bicodon_conservation_ORF0.csv`: Raw bicodon counts.
+- `bicodon_stats_ORF0.csv`: Full metrics including ExpectedRate, FittedRate, Outlier status, NormalizedScore, and DipeptideZ.
+- `conservation_regression_ORF0.png`: Plot of observed vs expected conservation rates.
 
-Each file contains:
-- `codon` / `codon_pair`: The sequence.
-- `ReferenceCount`: Occurrences in the reference sequence.
-- `ConservationCount`: Number of times the codon was conserved (>90% match) across alignments.
-- `ConservationRate`: `ConservationCount / ReferenceCount`.
+For a full explanation of the outputs, refer to the [Methodology Documentation](docs/METHODOLOGY.md).
 
 ## License
 

@@ -1,112 +1,223 @@
-import pandas as pd
+"""Codon pair statistics."""
+
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from typing import Iterable, Tuple
+
 import numpy as np
-from typing import Tuple, List
+import pandas as pd
+
+from ..utils.genetic_code import get_genetic_code
+from .assembler import add_rates
 
 
-def calculate_expected_bicodon_rates(codon_df: pd.DataFrame, bicodon_df: pd.DataFrame) -> pd.DataFrame:
+@dataclass
+class RegressionResult:
+    """Result of a least-squares fit through the origin."""
+
+    slope: float
+    r_squared: float
+    sigma: float
+    n: int
+
+    def as_dict(self) -> dict:
+        return asdict(self)
+
+
+def _rate_column(df: pd.DataFrame) -> pd.DataFrame:
+    return df if "ConservationRate" in df.columns else add_rates(df)
+
+
+def calculate_expected_bicodon_rates(
+    codon_df: pd.DataFrame, bicodon_df: pd.DataFrame
+) -> pd.DataFrame:
+    """Return a copy of ``bicodon_df`` with ``Codon1``, ``Codon2`` and ``ExpectedRate`` columns.
+
+    ``ExpectedRate`` is the product of the conservation rates of both codons.
+    Neither input is modified.
     """
-    Calculates expected bicodon conservation rates based on constituent codons.
-    Rate_exp = Rate(Codon1) * Rate(Codon2)
-    """
-    # Create a mapping of codon -> rate
-    # Handle missing or zero reference counts
-    # Rate = ConservationCount / ReferenceCount
-    if 'ConservationRate' not in codon_df.columns:
-        # Calculate if missing (though assembler should have done it)
-        codon_df['ConservationRate'] = codon_df.apply(
-            lambda row: row['ConservationCount'] / row['ReferenceCount'] if row['ReferenceCount'] > 0 else 0, axis=1
-        )
-    
-    rate_map = dict(zip(codon_df['codon'], codon_df['ConservationRate']))
-    
-    # Process bicodon dataframe
-    df = bicodon_df.copy()
-    if 'ConservationRate' not in df.columns:
-        df['ConservationRate'] = df.apply(
-             lambda row: row['ConservationCount'] / row['ReferenceCount'] if row['ReferenceCount'] > 0 else 0, axis=1
-        )
+    codons = _rate_column(codon_df)
+    rate_map = pd.Series(
+        codons["ConservationRate"].to_numpy(dtype=float), index=codons["Codon"].to_numpy()
+    )
 
-    def get_expected(bicodon):
-        c1 = bicodon[:3]
-        c2 = bicodon[3:]
-        r1 = rate_map.get(c1, 0)
-        r2 = rate_map.get(c2, 0)
-        return r1 * r2
-
-    df['ExpectedRate'] = df['codon_pair'].apply(get_expected)
+    df = _rate_column(bicodon_df).copy()
+    pairs = df["CodonPair"].astype(str)
+    df["Codon1"] = pairs.str[:3]
+    df["Codon2"] = pairs.str[3:]
+    r1 = df["Codon1"].map(rate_map).to_numpy(dtype=float)
+    r2 = df["Codon2"].map(rate_map).to_numpy(dtype=float)
+    df["ExpectedRate"] = r1 * r2
     return df
 
 
-def perform_regression(bicodon_df: pd.DataFrame) -> Tuple[float, float]:
-    """
-    Performs linear regression (Observed vs Expected) forcing intercept to 0.
-    Returns (slope, r_squared).
-    """
-    # Filter out cases with 0 expected rate to avoid noise? Or keep all?
-    # Usually keep all valid points.
-    
-    y = bicodon_df['ConservationRate'].values
-    x = bicodon_df['ExpectedRate'].values
-    
-    # Linear regression with intercept=0: y = m*x
-    # Least squares: m = sum(x*y) / sum(x^2)
-    
-    x_new = x[:, np.newaxis]
-    m, _, _, _ = np.linalg.lstsq(x_new, y, rcond=None)
-    slope = m[0]
-    
-    # Calculate R^2
-    y_pred = slope * x
-    ss_res = np.sum((y - y_pred) ** 2)
-    ss_tot = np.sum((y - np.mean(y)) ** 2)
-    r_squared = 1 - (ss_res / ss_tot)
-    
-    return slope, r_squared
+def _fit_mask(df: pd.DataFrame, x: str, y: str) -> np.ndarray:
+    mask = np.isfinite(df[x].to_numpy(dtype=float)) & np.isfinite(df[y].to_numpy(dtype=float))
+    if "ReferenceCount" in df.columns:
+        mask &= df["ReferenceCount"].to_numpy() > 0
+    return mask
 
 
-def calculate_z_scores(bicodon_df: pd.DataFrame) -> pd.DataFrame:
+def perform_regression(
+    bicodon_df: pd.DataFrame, x: str = "ExpectedRate", y: str = "ConservationRate"
+) -> RegressionResult:
+    """Least-squares fit of ``y = m * x`` (intercept fixed at zero).
+
+    Rows with ``ReferenceCount == 0`` or non-finite values are ignored.
+
+    Returns:
+        :class:`RegressionResult` with slope, uncentred R², residual standard
+        error σ and the number of points used. Values are ``NaN`` when the fit
+        is not possible (fewer than 2 points or all ``x`` equal to zero).
     """
-    Calculates Z-scores for bicodon conservation.
-    Z = (Observed - Expected) / sqrt(Expected * (1-Expected) / N)
+    mask = _fit_mask(bicodon_df, x, y)
+    xs = bicodon_df[x].to_numpy(dtype=float)[mask]
+    ys = bicodon_df[y].to_numpy(dtype=float)[mask]
+    n = int(mask.sum())
+
+    sxx = float(np.dot(xs, xs))
+    if n < 2 or sxx == 0.0:
+        return RegressionResult(slope=float("nan"), r_squared=float("nan"), sigma=float("nan"), n=n)
+
+    slope = float(np.dot(xs, ys) / sxx)
+    ss_res = float(np.sum((ys - slope * xs) ** 2))
+    syy = float(np.dot(ys, ys))
+    r_squared = 1.0 - ss_res / syy if syy > 0 else float("nan")
+    sigma = float(np.sqrt(ss_res / (n - 1)))
+    return RegressionResult(slope=slope, r_squared=r_squared, sigma=sigma, n=n)
+
+
+def flag_outliers(
+    bicodon_df: pd.DataFrame,
+    fit: RegressionResult,
+    sigma_threshold: float = 3.0,
+    x: str = "ExpectedRate",
+    y: str = "ConservationRate",
+) -> pd.DataFrame:
+    """Return a copy with ``FittedRate``, ``Residual``, ``SigmaDistance`` and ``Outlier`` columns.
+
+    ``Outlier`` is ``"high"`` (more conserved than predicted), ``"low"`` (less
+    conserved than predicted) or ``""``. Rows excluded from the fit get NaN.
     """
     df = bicodon_df.copy()
-    
-    def get_z(row):
-        n = row['ReferenceCount']
-        if n == 0:
-            return 0
-        p_obs = row['ConservationRate']
-        p_exp = row['ExpectedRate']
-        
-        # Avoid division by zero if p_exp is 0 or 1
-        if p_exp <= 0 or p_exp >= 1:
-            return 0 # logic choice: if expected is 0 and observed is >0, it's infinite, but let's clamp or handle
-        
-        sigma = np.sqrt(p_exp * (1 - p_exp) / n)
-        if sigma == 0:
-            return 0
-            
-        return (p_obs - p_exp) / sigma
+    mask = _fit_mask(df, x, y)
+    fitted = fit.slope * df[x].to_numpy(dtype=float)
+    residual = df[y].to_numpy(dtype=float) - fitted
+    fitted[~mask] = np.nan
+    residual[~mask] = np.nan
 
-    df['ZScore'] = df.apply(get_z, axis=1)
-    df['IsConserved'] = df['ZScore'] > 3
+    if np.isfinite(fit.sigma) and fit.sigma > 0:
+        distance = residual / fit.sigma
+    else:
+        distance = np.full(len(df), np.nan)
+
+    outlier = np.full(len(df), "", dtype=object)
+    with np.errstate(invalid="ignore"):
+        outlier[distance > sigma_threshold] = "high"
+        outlier[distance < -sigma_threshold] = "low"
+
+    df["FittedRate"] = fitted
+    df["Residual"] = residual
+    df["SigmaDistance"] = distance
+    df["Outlier"] = outlier
     return df
 
 
-def filter_inhibitory_pairs(bicodon_df: pd.DataFrame, rare_codons: List[str]) -> pd.DataFrame:
+def normalized_scores(
+    bicodon_df: pd.DataFrame, codon_df: pd.DataFrame, pseudocount: float
+) -> pd.DataFrame:
+    """Return a copy with the ``NormalizedScore`` column.
+
+    ``X = (CPCR + p) / ((CCR1 + p) * (CCR2 + p))``. Pairs never observed in the
+    reference (``ReferenceCount == 0``) get ``NaN``.
     """
-    Filters conserved bicodons where both codons are rare.
+    if pseudocount < 0:
+        raise ValueError("pseudocount must be >= 0")
+    df = (
+        bicodon_df
+        if "Codon1" in bicodon_df.columns
+        else calculate_expected_bicodon_rates(codon_df, bicodon_df)
+    )
+    df = df.copy()
+    codons = _rate_column(codon_df)
+    rate_map = pd.Series(
+        codons["ConservationRate"].to_numpy(dtype=float), index=codons["Codon"].to_numpy()
+    )
+    r1 = df["Codon1"].map(rate_map).to_numpy(dtype=float)
+    r2 = df["Codon2"].map(rate_map).to_numpy(dtype=float)
+    cpcr = df["ConservationRate"].to_numpy(dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        score = (cpcr + pseudocount) / ((r1 + pseudocount) * (r2 + pseudocount))
+    score[df["ReferenceCount"].to_numpy() == 0] = np.nan
+    score[~np.isfinite(score)] = np.nan
+    df["NormalizedScore"] = score
+    return df
+
+
+def dipeptide_z_scores(bicodon_df: pd.DataFrame, genetic_code: int = 1) -> pd.DataFrame:
+    """Return a copy with ``Dipeptide`` and ``DipeptideZ`` columns.
+
+    ``DipeptideZ`` is the z-score of ``log(NormalizedScore)`` among all codon
+    pairs encoding the same dipeptide. Families with fewer than two valid
+    members, or with zero variance, get ``NaN``.
     """
-    rare_set = set(rare_codons)
-    
-    def is_inhibitory(row):
-        if not row['IsConserved']:
-            return False
-        bicodon = row['codon_pair']
-        c1 = bicodon[:3]
-        c2 = bicodon[3:]
-        return (c1 in rare_set) and (c2 in rare_set)
-    
+    code = get_genetic_code(genetic_code)
     df = bicodon_df.copy()
-    df['IsInhibitory'] = df.apply(is_inhibitory, axis=1)
-    return df[df['IsInhibitory']]
+    df["Dipeptide"] = [code.dipeptide(p) for p in df["CodonPair"].astype(str)]
+    score = df["NormalizedScore"].to_numpy(dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        log_score = np.where(score > 0, np.log(score), np.nan)
+    log_s = pd.Series(log_score, index=df.index)
+    grouped = log_s.groupby(df["Dipeptide"].to_numpy())
+    mean = grouped.transform("mean")
+    std = grouped.transform(lambda s: s.std(ddof=1))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        z = (log_s - mean) / std
+    z = z.to_numpy(dtype=float, copy=True)
+    z[~np.isfinite(z)] = np.nan
+    df["DipeptideZ"] = z
+    return df
+
+
+def analyze_pairs(
+    codon_df: pd.DataFrame,
+    pair_df: pd.DataFrame,
+    n_reference_codons: int,
+    *,
+    genetic_code: int = 1,
+    sigma_threshold: float = 3.0,
+) -> Tuple[pd.DataFrame, RegressionResult]:
+    """Run the full codon-pair analysis.
+
+    Returns:
+        ``(stats_df, fit)`` where ``stats_df`` contains the expected rates,
+        regression residuals, outlier flags, normalized scores and dipeptide
+        z-scores for every codon pair.
+    """
+    df = calculate_expected_bicodon_rates(codon_df, pair_df)
+    fit = perform_regression(df)
+    df = flag_outliers(df, fit, sigma_threshold)
+    pseudocount = 1.0 / n_reference_codons if n_reference_codons > 0 else 0.0
+    df = normalized_scores(df, codon_df, pseudocount)
+    df = dipeptide_z_scores(df, genetic_code)
+    return df, fit
+
+
+def filter_inhibitory_pairs(bicodon_df: pd.DataFrame, rare_codons: Iterable[str]) -> pd.DataFrame:
+    """Return the pairs that are high outliers and made of two rare codons."""
+    rare = {c.strip().upper() for c in rare_codons}
+    pairs = bicodon_df["CodonPair"].astype(str)
+    is_rare_pair = pairs.str[:3].isin(rare) & pairs.str[3:].isin(rare)
+    is_high = bicodon_df["Outlier"].to_numpy() == "high"
+    return bicodon_df[is_rare_pair.to_numpy() & is_high].reset_index(drop=True)
+
+
+def select_pairs(bicodon_df: pd.DataFrame, pairs: Iterable[str]) -> pd.DataFrame:
+    """Return the rows of ``bicodon_df`` for the given codon pairs (e.g. a list of known ICPs).
+
+    Pairs may be written as ``CGACGA`` or ``CGA-CGA``; RNA ``U`` is converted to ``T``.
+    """
+    wanted = [p.strip().upper().replace("-", "").replace("U", "T") for p in pairs]
+    wanted = [p for p in wanted if p]
+    return bicodon_df[bicodon_df["CodonPair"].isin(wanted)].reset_index(drop=True)

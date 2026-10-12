@@ -1,12 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and tools
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+.audit/
+.vscode/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Build and distribution artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Packaging / OS downloads
+*.deb
+
+# Local data & run outputs
 /*.afa
 /history*.csv
-.vscode/launch.json
 bicodon*.csv
 codon*.csv
-__pycache__
-.vscode
-dataframes/*
-.pytest_cache
-results
+dataframes/
+results*
 rare_codons.txt
-FASTA_files/*.afa
+FASTA_files/
+
+# Replication large datasets
+replication_ghoneim2019/

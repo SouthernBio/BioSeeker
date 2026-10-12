@@ -4,20 +4,56 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bioseeker"
-version = "1.0.0"
+version = "2.0.0"
 description = "A tool for analyzing conservation of inhibitory codon pairs."
 authors = [{name = "Facundo Martinez", email = "fxmartinez@proton.me"}]
+readme = "README.md"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.11"
 dependencies = [
-    "numpy",
-    "pandas",
-    "biopython",
-    "matplotlib",
-    "scipy",
+    "numpy>=1.24",
+    "pandas>=1.5",
+    "biopython>=1.81",
+    "matplotlib>=3.6",
 ]
-requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.urls]
+Homepage = "https://github.com/SouthernBio/BioSeeker"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "build",
+]
 
 [project.scripts]
-bioseeker = "bioseeker.main:main"
+bioseeker = "bioseeker.cli:main"
+
+[tool.setuptools.package-data]
+bioseeker = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
