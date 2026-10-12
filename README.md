@@ -4,7 +4,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.md)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](pyproject.toml)
 
-![BioSeeker](logo.png)
+![BioSeeker](https://github.com/SouthernBio/BioSeeker/raw/main/logo.png)
 
 BioSeeker is a Python library and CLI tool for the analysis of codon and bicodon conservation rates across linked species.
 
@@ -16,7 +16,7 @@ BioSeeker calculates conservation rates for single codons and codon pairs (bicod
 
 Beyond simple counting, it runs linear regressions, finds outliers, and computes dipeptide-based z-scores to help you isolate translational selection signals. It can also calculate the Relative Synonymous Codon Usage (RSCU) for your dataset. If you prefer to avoid installing local dependencies, there is a Docker image available.
 
-You can read the exact mathematical definitions of these metrics in the [Methodology Documentation](docs/METHODOLOGY.md).
+You can read the exact mathematical definitions of these metrics in the [Methodology Documentation](https://github.com/SouthernBio/BioSeeker/blob/main/docs/METHODOLOGY.md).
 
 ## Installation
 
@@ -29,6 +29,13 @@ git clone https://github.com/SouthernBio/BioSeeker.git
 cd BioSeeker
 pip install .
 ```
+
+### From PyPI
+
+```bash
+pip install bioseeker
+```
+
 
 ### Development
 
