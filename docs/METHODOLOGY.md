@@ -68,7 +68,7 @@ Before counting, columns that are gaps in **every** sequence being compared are 
 ### 3.3 Positional Conservation
 Let $N$ be the number of sequences in the alignment (or the number of matching species when using `--species`), including the reference. A reference codon at position $i$ is **conserved** if:
 
-$$|\{\,s : \text{codon}_s(i) = \text{codon}_{\text{ref}}(i)\,\}| \;\ge\; t \cdot N$$
+$$\text{Count}\big(s : \text{codon}_s(i) = \text{codon}_{\text{ref}}(i)\big) \ge t \cdot N$$
 
 where $t$ is `--threshold`. With the default value, $t = 1.0$, this equates to **sequence and position identity across all species**, which is the paper's definition (Fig. 1A).
 
