@@ -14,7 +14,7 @@ With this project, you can calculate codon and bicodon conservation rates for a 
 
 ## What it does
 
-BioSeeker calculates conservation rates for single codons and codon pairs (bicodons) across three reading frames (ORF 0, 1, 2) by reading standard FASTA formats with Biopython. It automatically aggregates results from multiple alignment files and uses NumPy to speed up the math.
+BioSeeker calculates conservation rates for single codons and codon pairs (bicodons) across three reading frames by reading standard FASTA formats with Biopython. It automatically aggregates results from multiple alignment files and uses NumPy to speed up the math.
 
 Beyond simple counting, it runs linear regressions, finds outliers, and computes dipeptide-based z-scores to help you isolate translational selection signals. It can also calculate the Relative Synonymous Codon Usage (RSCU) for your dataset. If you prefer to avoid installing local dependencies, there is a Docker image available.
 
